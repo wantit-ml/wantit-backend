@@ -14,6 +14,7 @@ class User(Base):
 	phone = Column(String)
 	role = Column(String)
 	about = relationship("About", backref="users")
+	salt = relationship("Salt", backref="users")
 
 class About(Base):
 	__tablename__ = "about"
@@ -59,6 +60,11 @@ class Achievement(Base):
 	description = Column(String)
 	about_id = Column(Integer, ForeignKey("about.id"))
 
+class Salt(Base):
+	__tablename__ = "salt"
+	id = Column(Integer, primary_key=True)
+	salt = Column(String)
+	user_id = Column(Integer, ForeignKey("users.id"))
 
 engine = create_engine("postgresql://fodro@localhost:5432/fodro")
 Base.metadata.bind = engine
