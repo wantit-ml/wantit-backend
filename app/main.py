@@ -2,7 +2,7 @@ from typing import Optional
 
 from fastapi import FastAPI
 
-from db.db_setup import db
+from app.db.db_setup import db
 
 app = FastAPI()
 
