@@ -1,3 +1,4 @@
+from typing import Union
 from app.db.db_setup import db, User, Salt
 import hashlib
 import bcrypt
@@ -12,5 +13,10 @@ async def create_user(username: str, password_raw: str, email: str, phone: str, 
 	db.add(new_user)
 	db.commit()
 
-async def get_user():
-	pass
+async def get_user(user_identificator: Union[int, str]) -> User:
+	if type(user_identificator) is str:
+		user = db.query(User).filter(User.username == user_identificator).one()
+		return user
+	else:
+		user = db.query(User).filter(User.id == user_identificator).one()
+		return user

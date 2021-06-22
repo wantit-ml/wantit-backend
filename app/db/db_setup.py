@@ -13,13 +13,13 @@ class User(Base):
 	email = Column(String)
 	phone = Column(String)
 	role = Column(String)
-	about = relationship("About", backref="user")
+	about = relationship("About", backref="users")
 	salt = relationship("Salt", backref="users")
 
 class About(Base):
 	__tablename__ = "about"
 	id = Column(Integer, primary_key=True)
-	user = relationship("User", backref="about")
+	user_id = Column(Integer, ForeignKey("users.id"))
 	name = Column(String)
 	surname = Column(String)
 	city = Column(String)
@@ -66,7 +66,7 @@ class Salt(Base):
 	salt = Column(String)
 	user_id = Column(Integer, ForeignKey("users.id"))
 
-engine = create_engine("postgresql://fodro@localhost:5432/template1")
+engine = create_engine("postgresql://fodro@localhost:5432/fodro")
 Base.metadata.bind = engine
 Base.metadata.create_all(engine)
 
