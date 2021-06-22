@@ -10,7 +10,7 @@ class UserAlreadyExists(Exception):
 
 async def create_user(username: str, password_raw: str, email: str, phone: str, role: str) -> None:
 	try:
-		get_user(username)
+		await get_user(username)
 	except:
 		salt = bcrypt.gensalt()
 		hash_object = hashlib.sha256(password_raw.encode() + salt)
@@ -38,7 +38,7 @@ async def create_about(user_identifier: Union[int, str],
 							school: str, grade: int, native_language: str, foreign_languages: List[str], can_move: str,
 							metro_station: str, github_id: str, vk_id: str, telegram_id: str, 
 							timetable: List[Dict], achievements: List[Dict]) -> None:
-	user = get_user(user_identifier)
+	user = await get_user(user_identifier)
 	new_about = About(name=name, surname=surname, city=city, birthday=birthday, gender=gender, citizenships=citizenships, rank=rank, 
 		salary=salary, currency=currency, stack=stack, school=school, grade=grade, native_language=native_language,
 		foreign_languages=foreign_languages, can_move=can_move, metro_station=metro_station, github_id=github_id, vk_id=vk_id,
@@ -55,13 +55,13 @@ async def create_about(user_identifier: Union[int, str],
 	db.commit()
 
 async def get_about(user_identifier: Union[int, str]) -> About:
-	user = get_user(user_identifier)
+	user = await get_user(user_identifier)
 	return user.about[0]
 
 async def create_session(user_identifier: Union[int, str]) -> str:
 	session_id = uuid.uuid1()
 	new_session = Session(session_id=session_id)
-	user = get_user(user_identifier)
+	user = await get_user(user_identifier)
 	user.sessions.append(new_session)
 	db.commit()
 	return session_id
@@ -72,7 +72,7 @@ async def expire_session(session_id: str) -> None:
 	db.commit()
 
 async def verify_session(user_identifier: Union[int, str], session_id: str) -> bool:
-	user = get_user(user_identifier)
+	user = await get_user(user_identifier)
 	is_valid = False
 	for session in user.sessions:
 		if session.session_id == session_id:
