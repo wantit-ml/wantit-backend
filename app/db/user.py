@@ -79,3 +79,7 @@ async def verify_session(user_identifier: Union[int, str], session_id: str) -> b
 			is_valid = True
 			break
 	return is_valid
+
+async def verify_role(user_identifier: Union[int, str], role) -> bool:
+	user = await get_user(user_identifier)
+	return user.role == role
