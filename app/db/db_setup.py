@@ -43,7 +43,7 @@ class About(Base):
 	achievements = relationship("Achievement", backref="about")
 
 class Timetable(Base):
-	__tablename__ = "Timetable"
+	__tablename__ = "timetable"
 	id = Column(Integer, primary_key=True)
 	day = Column(String)
 	times = Column(String) # e.g. times = ["18:00-19:00", "12:00-13:00" etc]
