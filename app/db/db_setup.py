@@ -13,13 +13,13 @@ class User(Base):
 	email = Column(String)
 	phone = Column(String)
 	role = Column(String)
-	about = relationship("About", backref="users")
+	about = relationship("About", backref="user")
 	salt = relationship("Salt", backref="users")
 
 class About(Base):
 	__tablename__ = "about"
 	id = Column(Integer, primary_key=True)
-	user_id = Column(Integer, ForeignKey("users.id"))
+	user = relationship("User", backref="about")
 	name = Column(String)
 	surname = Column(String)
 	city = Column(String)
@@ -43,7 +43,7 @@ class About(Base):
 	achievements = relationship("Achievement", backref="about")
 
 class Timetable(Base):
-	__tablename__ = "Timetable"
+	__tablename__ = "timetable"
 	id = Column(Integer, primary_key=True)
 	day = Column(String)
 	times = Column(String) # e.g. times = ["18:00-19:00", "12:00-13:00" etc]
@@ -66,7 +66,7 @@ class Salt(Base):
 	salt = Column(String)
 	user_id = Column(Integer, ForeignKey("users.id"))
 
-engine = create_engine("postgresql://fodro@localhost:5432/fodro")
+engine = create_engine("postgresql://fodro@localhost:5432/template1")
 Base.metadata.bind = engine
 Base.metadata.create_all(engine)
 
