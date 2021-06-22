@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, ARRAY, Boolean, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
+import os
 
 Base = declarative_base()
 
@@ -89,7 +90,7 @@ class Vacancy(Base):
 	phone = Column(String)
 	email = Column(String)
 
-engine = create_engine("postgresql://fodro@localhost:5432/fodro")
+engine = create_engine(os.environ["PSQL_LINK"])
 Base.metadata.bind = engine
 Base.metadata.create_all(engine)
 
