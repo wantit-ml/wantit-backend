@@ -3,8 +3,12 @@ from typing import Optional
 from fastapi import FastAPI
 
 from app.db.db_setup import db
+from app.auth import main as auth
 
 app = FastAPI()
+
+
+app.include_router(auth.router, tags=["authentication"], prefix="/auth")
 
 
 @app.get("/")
