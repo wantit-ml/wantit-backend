@@ -15,6 +15,13 @@ class User(Base):
 	role = Column(String)
 	about = relationship("About", backref="users")
 	salt = relationship("Salt", backref="users")
+	sessions = relationship("Session", backref="users")
+
+class Session(Base):
+	__tablename__ = "session"
+	id = Column(Integer, primary_key=True)
+	session_id = Column(String)
+	user_id = Column(Integer, ForeignKey("users.id"))
 
 class About(Base):
 	__tablename__ = "about"
