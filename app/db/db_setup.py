@@ -73,10 +73,25 @@ class Salt(Base):
 	salt = Column(String)
 	user_id = Column(Integer, ForeignKey("users.id"))
 
+class Vacancy(Base):
+	__tablename__ = "vacancy"
+	id = Column(Integer, primary_key=True)
+	title = Column(String)
+	code = Column(String)
+	description = Column(String)
+	stack = Column(ARRAY(String))
+	salary = Column(Integer)
+	currency = Column(String)
+	city = Column(String)
+	address = Column(String)
+	type_of_vacancy = Column(String)
+	author = Column(String)
+	phone = Column(String)
+	email = Column(String)
+
 engine = create_engine("postgresql://fodro@localhost:5432/fodro")
 Base.metadata.bind = engine
 Base.metadata.create_all(engine)
 
 DBSession = sessionmaker(bind=engine)
-
 db = DBSession()
