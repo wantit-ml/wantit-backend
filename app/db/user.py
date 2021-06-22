@@ -40,6 +40,9 @@ async def create_about(user_identificator: Union[int, str],
 		new_achievement = Achievement(type=achievement["type"], title=achievement["title"],
 			level=achievement["level"], role=achievement["role"], file=achievement["file"],
 			description=achievement["description"])
-		new_about.achievements.append(new_time_record)
+		new_about.achievements.append(new_achievement)
 	db.add(new_about)
 	db.commit()
+
+async def get_about() -> About:
+	pass
