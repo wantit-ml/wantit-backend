@@ -46,7 +46,7 @@ class Timetable(Base):
 	__tablename__ = "timetable"
 	id = Column(Integer, primary_key=True)
 	day = Column(String)
-	times = Column(String) # e.g. times = ["18:00-19:00", "12:00-13:00" etc]
+	time = Column(String) # e.g. times = ["18:00-19:00", "12:00-13:00" etc]
 	about_id = Column(Integer, ForeignKey("about.id"))
 
 class Achievement(Base):
