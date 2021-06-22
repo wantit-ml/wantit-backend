@@ -1,11 +1,11 @@
 from typing import Dict
 
 from fastapi.routing import APIRouter
-from fastapi import Response, responses, status
+from fastapi import Response, status
 from pydantic import BaseModel
 from pydantic.tools import parse_raw_as
 
-from app.db.db_setup import Base
+from app.db.user import create_user as create_user_in_db
 
 router = APIRouter()
 
@@ -45,10 +45,13 @@ class UserLoginModel(BaseModel):
     }
 )
 async def create_user(user: UserRegistrationModel, response: Response):
-    if True:
-        response.status_code = status.HTTP_400_BAD_REQUEST
-        return "USERNAME_ALREADY_TAKEN"
-    print(user)  # TODO: Registration
+    create_user_in_db(
+        user.username,
+        user.password,
+        user.email,
+        user.phone,
+        user.role
+    )
     response.status_code = status.HTTP_200_OK
     return "OK"
 
