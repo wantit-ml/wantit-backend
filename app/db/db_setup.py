@@ -38,7 +38,7 @@ class About(Base):
 	currency = Column(String)
 	stack = Column(ARRAY(String))
 	school = Column(String)
-	grade = Column(Integer)
+	age = Column(Integer)
 	native_language = Column(String)
 	foreign_languages = Column(ARRAY(String))
 	can_move = Column(String)
