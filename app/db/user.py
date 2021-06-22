@@ -35,12 +35,12 @@ async def get_user(user_identifier: Union[int, str]) -> User:
 async def create_about(user_identifier: Union[int, str],
 							name: str, surname: str, city: str, birthday: datetime, gender: str,
 							citizenships: List[str], rank: str, salary: int, currency: str, stack: List[str],
-							school: str, grade: int, native_language: str, foreign_languages: List[str], can_move: str,
+							school: str, age: int, native_language: str, foreign_languages: List[str], can_move: str,
 							metro_station: str, github_id: str, vk_id: str, telegram_id: str, 
 							timetable: List[Dict], achievements: List[Dict]) -> None:
 	user = await get_user(user_identifier)
 	new_about = About(name=name, surname=surname, city=city, birthday=birthday, gender=gender, citizenships=citizenships, rank=rank, 
-		salary=salary, currency=currency, stack=stack, school=school, grade=grade, native_language=native_language,
+		salary=salary, currency=currency, stack=stack, school=school, age=age, native_language=native_language,
 		foreign_languages=foreign_languages, can_move=can_move, metro_station=metro_station, github_id=github_id, vk_id=vk_id,
 		telegram_id=telegram_id)
 	for item in timetable:
@@ -79,3 +79,7 @@ async def verify_session(user_identifier: Union[int, str], session_id: str) -> b
 			is_valid = True
 			break
 	return is_valid
+
+async def verify_role(user_identifier: Union[int, str], role) -> bool:
+	user = await get_user(user_identifier)
+	return user.role == role
