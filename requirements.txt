@@ -1,12 +1,16 @@
 asgiref==3.3.4
 autopep8==1.5.7
+bcrypt==3.2.0
+cffi==1.14.5
 click==8.0.1
 fastapi==0.65.2
 greenlet==1.1.0
 h11==0.12.0
 psycopg2==2.9.1
 pycodestyle==2.7.0
+pycparser==2.20
 pydantic==1.8.2
+six==1.16.0
 SQLAlchemy==1.4.18
 starlette==0.14.2
 toml==0.10.2
