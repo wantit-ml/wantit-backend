@@ -65,3 +65,17 @@ async def create_session(user_identificator: Union[int, str]) -> str:
 	user.sessions.append(new_session)
 	db.commit()
 	return session_id
+
+async def expire_session(session_id: str) -> None:
+	db.query(Session).filter(Session.session_id ==
+                          session_id).delete(synchronize_session="fetch")
+	db.commit()
+
+async def verify_session(user_identificator: Union[int, str], session_id: str) -> bool:
+	user = get_user(user_identificator)
+	is_valid = False
+	for session in user.sessions:
+		if session.session_id == session_id:
+			is_valid = True
+			break
+	return is_valid
