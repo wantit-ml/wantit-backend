@@ -1,6 +1,6 @@
 from typing import Union, List, Dict
 from datetime import datetime
-from app.db.db_setup import db, User, Salt, About, Achievement, Timetable, Session
+from app.db.db_setup import db, User, Salt, About, Achievement, Timetable, Session, Tech, Language
 import hashlib
 import bcrypt
 import uuid
@@ -52,6 +52,18 @@ async def create_about(user_identifier: Union[int, str],
 			description=achievement["description"])
 		new_about.achievements.append(new_achievement)
 	user.about.append(new_about)
+	for tech in stack:
+		try:
+			new_tech = Tech(title=tech)
+			db.add(new_tech)
+		except:
+			continue
+	for language in foreign_languages:
+		try:
+			new_language = Language(title=language)
+			db.add(new_language)
+		except:
+			continue
 	db.commit()
 
 async def get_about(user_identifier: Union[int, str]) -> About:

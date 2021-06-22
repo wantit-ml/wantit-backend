@@ -48,6 +48,7 @@ class About(Base):
 	github_id = Column(String)
 	vk_id = Column(String)
 	telegram_id = Column(String)
+	code = Column(Integer)
 	achievements = relationship("Achievement", backref="about")
 
 class Timetable(Base):
@@ -78,7 +79,7 @@ class Vacancy(Base):
 	__tablename__ = "vacancy"
 	id = Column(Integer, primary_key=True)
 	title = Column(String)
-	code = Column(String)
+	vacation_code = Column(String)
 	description = Column(String)
 	stack = Column(ARRAY(String))
 	salary = Column(Integer)
@@ -89,6 +90,17 @@ class Vacancy(Base):
 	author = Column(String)
 	phone = Column(String)
 	email = Column(String)
+	code = Column(Integer)
+
+class Tech(Base):
+	__tablename__ = "techs"
+	id = Column(Integer, primary_key=True)
+	title = Column(String, unique=True)
+
+class Language(Base):
+	__tablename__ = "languages"
+	id = Column(Integer, primary_key=True, unique=True)
+	title = Column(String)
 
 engine = create_engine(os.environ["PSQL_LINK"])
 Base.metadata.bind = engine
