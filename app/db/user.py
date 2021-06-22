@@ -1,8 +1,9 @@
 from typing import Union, List, Dict
-from datetime import datetime, time
-from app.db.db_setup import db, User, Salt, About, Achievement, Timetable
+from datetime import datetime
+from app.db.db_setup import db, User, Salt, About, Achievement, Timetable, Session
 import hashlib
 import bcrypt
+import uuid
 
 class UserAlreadyExists(Exception):
 	...
@@ -56,3 +57,11 @@ async def create_about(user_identificator: Union[int, str],
 async def get_about(user_identificator: Union[int, str]) -> About:
 	user = get_user(user_identificator)
 	return user.about[0]
+
+async def create_session(user_identificator: Union[int, str]) -> str:
+	session_id = uuid.uuid1()
+	new_session = Session(session_id=session_id)
+	user = get_user(user_identificator)
+	user.sessions.append(new_session)
+	db.commit()
+	return session_id
