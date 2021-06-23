@@ -1,11 +1,12 @@
 from typing import Union, List, Dict
 from datetime import datetime
+from json import dumps
 
 from fastapi.routing import APIRouter
 from pydantic import BaseModel
 from fastapi import Response, status
 
-from app.db.user import create_about
+from app.db.user import create_about, get_about
 
 router = APIRouter()
 
@@ -37,7 +38,6 @@ class UserAboutModel(BaseModel):
 
 @router.post('/fill_about')
 async def fill_about(user: UserAboutModel):
-    print(user)
     await create_about(
         user.identifier,
         user.name,
@@ -63,3 +63,32 @@ async def fill_about(user: UserAboutModel):
         user.achievements
     )
     return Response(status_code=200)
+
+
+@router.get('/get_about', description="This method returns user's about page. Accepts id or username.")
+async def fetch_about(identifier: Union[str, int] = None):
+    about = await get_about(identifier)
+    response = dumps({
+        "id": about.id,
+        "user_id": about.user_id,
+        "name": about.name,
+        "surname": about.surname,
+        "city": about.city,
+        "birthday": about.birthday.strftime("%a,%d %b %Y %H:%M:%S"),
+        "gender": about.gender,
+        "citizenships": about.citizenships,
+        "rank": about.rank,
+        "salary": about.salary,
+        "currency": about.currency,
+        "stack": about.stack,
+        "school": about.school,
+        "age": about.age,
+        "native_language": about.native_language,
+        "foreign_languages": about.foreign_languages,
+        "can_move": about.can_move,
+        "metro_station": about.metro_station,
+        "github_id": about.github_id,
+        "vk_id": about.vk_id,
+        "telegram_id": about.telegram_id,
+    })
+    return Response(content=response, status_code=200)
