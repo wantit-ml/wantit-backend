@@ -123,7 +123,7 @@ async def get_matching_users(vacancy_id: int) -> List(User):
 	for user in users:
 		users_list.append(user.about[0])
 	vacancy = db.query(Vacancy).filter(Vacancy.id == vacancy_id).one()
-	matching_users_ids = MatchForHR.search_users(vacancy, users)
+	matching_users_ids = await MatchForHR.search_users(vacancy, users)
 	matching_users = []
 	for user in users:
 		if user.id in matching_users_ids:
