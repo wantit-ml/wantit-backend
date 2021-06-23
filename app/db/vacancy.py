@@ -31,4 +31,8 @@ async def create_vacancy(
 		phone=phone, email=email)
 	firm.vacancies.append(new_vacancy)
 	db.commit()
-	
+
+async def delete_vacancy(vacancy_id: int) -> None:
+	db.query(Vacancy).filter(Vacancy.id == vacancy_id).delete(
+		synchronize_session="fetch")
+	db.commit()
