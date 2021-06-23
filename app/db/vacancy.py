@@ -2,6 +2,7 @@ from typing import List, Union, Optional
 from app.db.db_setup import Vacancy, db
 from app.db.user import get_about, get_user
 from app.db.tags import get_languages, get_techs
+from app.db.firm import get_firm_by_user_id, get_firm_by_id
 from app.ml.converter import Converter
 from app.ml.match import MatchForUser
 
@@ -20,8 +21,7 @@ async def create_vacancy(
 	phone: Optional[str],
 	email: Optional[str],
 ) -> None:
-	user = await get_user(user_identifier)
-	firm = user.firm[0]
+	firm = get_firm_by_user_id(user_identifier)
 	if phone == None:
 		phone = firm.phone
 	if email == None:
@@ -69,3 +69,7 @@ async def get_matching_vacancies(user_identifier: Union[int, str]) -> List[Vacan
 		if vacancy.id in matching_vacancies_ids:
 			matching_vacancies.append(vacancy)
 	return matching_vacancies
+
+async def get_vacancies_by_firm(firm_id: int) -> List[Vacancy]:
+	firm = get_firm_by_id(firm_id)
+	return firm.vacancies

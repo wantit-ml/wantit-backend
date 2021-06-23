@@ -81,6 +81,8 @@ class Firm(Base):
 	id = Column(Integer, primary_key=True)
 	user_id = Column(Integer, ForeignKey("users.id"))
 	title = Column(String)
+	name = Column(String)
+	surname = Column(String)
 	phone = Column(String)
 	email = Column(String)
 	description = Column(String)

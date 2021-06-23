@@ -18,3 +18,11 @@ async def create_firm(
 	user.firm.append(new_firm)
 	db.commit()
 
+async def get_firm_by_user_id(user_identifier: Union[int, str]) -> Firm:
+	user = await get_user(user_identifier)
+	return user.firm[0]
+
+async def get_firm_by_id(firm_id: int) -> Firm:
+	firm = db.query(Firm).filter(Firm.id == firm_id).one()
+	return firm
+
