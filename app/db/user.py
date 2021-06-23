@@ -1,4 +1,4 @@
-from typing import Union, List, Dict
+from typing import Union, List, Dict, Optional
 from datetime import datetime
 from app.db.db_setup import db, User, Salt, About, Achievement, Timetable, Session, Tech, Language
 from app.db.tags import get_techs, get_languages
@@ -8,6 +8,9 @@ import bcrypt
 import uuid
 
 class UserAlreadyExists(Exception):
+	...
+
+class WrongPassword(Exception):
 	...
 
 async def create_user(username: str, password_raw: str, email: str, phone: str, role: str) -> None:
@@ -72,13 +75,19 @@ async def get_about(user_identifier: Union[int, str]) -> About:
 	user = await get_user(user_identifier)
 	return user.about[0]
 
-async def create_session(user_identifier: Union[int, str]) -> str:
-	session_id = uuid.uuid1()
-	new_session = Session(session_id=session_id)
+async def create_session(user_identifier: Union[int, str], password_raw: str) -> str:
 	user = await get_user(user_identifier)
-	user.sessions.append(new_session)
-	db.commit()
-	return session_id
+	salt = user.salt[0]
+	hash_object = hashlib.sha256(password_raw.encode() + salt)
+	password = hash_object.hexdigest()
+	if user.password == password:
+		session_id = uuid.uuid1()
+		new_session = Session(session_id=session_id)
+		user.sessions.append(new_session)
+		db.commit()
+		return session_id
+	else:
+		raise WrongPassword
 
 async def expire_session(session_id: str) -> None:
 	db.query(Session).filter(Session.session_id ==
