@@ -1,6 +1,8 @@
 from typing import Union, List, Dict
 from datetime import datetime
-from app.db.db_setup import db, User, Salt, About, Achievement, Timetable, Session
+from app.db.db_setup import db, User, Salt, About, Achievement, Timetable, Session, Tech, Language
+from app.db.tags import get_techs, get_languages
+from app.ml.converter import Converter
 import hashlib
 import bcrypt
 import uuid
@@ -35,12 +37,12 @@ async def get_user(user_identifier: Union[int, str]) -> User:
 async def create_about(user_identifier: Union[int, str],
 							name: str, surname: str, city: str, birthday: datetime, gender: str,
 							citizenships: List[str], rank: str, salary: int, currency: str, stack: List[str],
-							school: str, grade: int, native_language: str, foreign_languages: List[str], can_move: str,
+							school: str, age: int, native_language: str, foreign_languages: List[str], can_move: str,
 							metro_station: str, github_id: str, vk_id: str, telegram_id: str, 
 							timetable: List[Dict], achievements: List[Dict]) -> None:
 	user = await get_user(user_identifier)
 	new_about = About(name=name, surname=surname, city=city, birthday=birthday, gender=gender, citizenships=citizenships, rank=rank, 
-		salary=salary, currency=currency, stack=stack, school=school, grade=grade, native_language=native_language,
+		salary=salary, currency=currency, stack=stack, school=school, age=age, native_language=native_language,
 		foreign_languages=foreign_languages, can_move=can_move, metro_station=metro_station, github_id=github_id, vk_id=vk_id,
 		telegram_id=telegram_id)
 	for item in timetable:
@@ -52,6 +54,18 @@ async def create_about(user_identifier: Union[int, str],
 			description=achievement["description"])
 		new_about.achievements.append(new_achievement)
 	user.about.append(new_about)
+	for tech in stack:
+		try:
+			new_tech = Tech(title=tech)
+			db.add(new_tech)
+		except:
+			continue
+	for language in foreign_languages:
+		try:
+			new_language = Language(title=language)
+			db.add(new_language)
+		except:
+			continue
 	db.commit()
 
 async def get_about(user_identifier: Union[int, str]) -> About:
@@ -79,3 +93,16 @@ async def verify_session(user_identifier: Union[int, str], session_id: str) -> b
 			is_valid = True
 			break
 	return is_valid
+
+async def verify_role(user_identifier: Union[int, str], role) -> bool:
+	user = await get_user(user_identifier)
+	return user.role == role
+
+async def convert_about(user_identifier: Union[int, str]) -> None:
+	about = await get_about(user_identifier)
+	techs = await get_techs()
+	languages = await get_languages()
+	converter = Converter(techs, languages)
+	code = await converter.convert(about)
+	about.code = code
+	db.commit()
