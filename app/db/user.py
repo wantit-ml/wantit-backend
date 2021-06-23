@@ -1,8 +1,10 @@
 from typing import Union, List, Dict, Optional
 from datetime import datetime
-from app.db.db_setup import db, User, Salt, About, Achievement, Timetable, Session, Tech, Language
+from app.db.db_setup import Vacancy, db, User, Salt, About, Achievement, Timetable, Session, Tech, Language
 from app.db.tags import get_techs, get_languages
+from app.db.vacancy import get_vacancy_by_id
 from app.ml.converter import Converter
+from app.ml.match import MatchForHR
 import hashlib
 import bcrypt
 import uuid
@@ -115,3 +117,16 @@ async def convert_about(user_identifier: Union[int, str]) -> None:
 	code = await converter.convert(about)
 	about.code = code
 	db.commit()
+
+async def get_matching_users(vacancy_id: int) -> List(User):
+	users = db.query(User).all()
+	users_list = []
+	for user in users:
+		users_list.append(user.about[0])
+	vacancy = await get_vacancy_by_id(vacancy_id)
+	matching_users_ids = await MatchForHR.search_users(vacancy, users)
+	matching_users = []
+	for user in users:
+		if user.id in matching_users_ids:
+			matching_users.append(user)
+	return matching_users

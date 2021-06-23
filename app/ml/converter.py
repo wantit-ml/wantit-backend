@@ -9,7 +9,7 @@ converts About or Vacancy class to code num
  that should be done once
  
  than for every new or changed application/vacancy you should call 
- converter.convert(object_to_code)
+ await converter.convert(object_to_code)
  and add the result of function to "code" field in DB
 """
 
