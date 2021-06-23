@@ -79,7 +79,7 @@ class Vacancy(Base):
 	__tablename__ = "vacancy"
 	id = Column(Integer, primary_key=True)
 	title = Column(String)
-  vacation_code = Column(String)
+	vacation_code = Column(String)
 	description = Column(String)
 	stack = Column(ARRAY(String))
 	salary = Column(Integer)
