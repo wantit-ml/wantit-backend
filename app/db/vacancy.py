@@ -36,3 +36,14 @@ async def delete_vacancy(vacancy_id: int) -> None:
 	db.query(Vacancy).filter(Vacancy.id == vacancy_id).delete(
 		synchronize_session="fetch")
 	db.commit()
+
+
+async def get_vacancies_by_user_id(user_identifier: Union[int, str]) -> List(Vacancy):
+	user = await get_user(user_identifier)
+	firm = user.firm[0]
+	vacancies = firm.vacancies
+	return vacancies
+
+async def get_vacancy_by_id(vacancy_id: int) -> Vacancy:
+	vacancy = db.query(Vacancy).filter(Vacancy.id == vacancy_id).one()
+	return vacancy
