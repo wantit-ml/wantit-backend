@@ -1,6 +1,8 @@
 from typing import List, Union, Optional
 from app.db.db_setup import Vacancy, db
 from app.db.user import get_user
+from app.db.tags import get_languages, get_techs
+from app.ml.converter import Converter
 
 async def create_vacancy(
 	user_identifier: Union[int, str],
@@ -47,3 +49,12 @@ async def get_vacancies_by_user_id(user_identifier: Union[int, str]) -> List(Vac
 async def get_vacancy_by_id(vacancy_id: int) -> Vacancy:
 	vacancy = db.query(Vacancy).filter(Vacancy.id == vacancy_id).one()
 	return vacancy
+
+async def convert_vacancy(vacancy_id: int) -> None:
+	vacancy = await get_vacancy_by_id(vacancy_id)
+	techs = await get_techs()
+	languages = await get_languages()
+	converter = Converter(techs, languages)
+	code = await converter.convert(vacancy)
+	vacancy.code = code
+	db.commit()
