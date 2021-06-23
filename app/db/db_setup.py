@@ -15,6 +15,7 @@ class User(Base):
 	phone = Column(String)
 	role = Column(String)
 	about = relationship("About", backref="users")
+	firm = relationship("Firm", backref="users")
 	salt = relationship("Salt", backref="users")
 	sessions = relationship("Session", backref="users")
 
@@ -75,6 +76,18 @@ class Salt(Base):
 	salt = Column(String)
 	user_id = Column(Integer, ForeignKey("users.id"))
 
+class Firm(Base):
+	__tablename__ = "firm"
+	id = Column(Integer, primary_key=True)
+	user_id = Column(Integer, ForeignKey("users.id"))
+	title = Column(String)
+	phone = Column(String)
+	description = Column(String)
+	logo = Column(String)
+	city = Column(String)
+	address = Column(String)
+	vacancies = relationship("Vacancy", backref="firm")
+
 class Vacancy(Base):
 	__tablename__ = "vacancy"
 	id = Column(Integer, primary_key=True)
@@ -91,6 +104,7 @@ class Vacancy(Base):
 	phone = Column(String)
 	email = Column(String)
 	code = Column(Integer)
+	firm_id = Column(Integer, ForeignKey("firm.id"))
 
 class Tech(Base):
 	__tablename__ = "techs"
