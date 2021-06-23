@@ -103,6 +103,6 @@ async def convert_about(user_identifier: Union[int, str]) -> None:
 	techs = await get_techs()
 	languages = await get_languages()
 	converter = Converter(techs, languages)
-	code = converter.convert(about)
+	code = await converter.convert(about)
 	about.code = code
 	db.commit()

@@ -11,11 +11,10 @@ converts About or Vacancy class to code num
  than for every new or changed application/vacancy you should call 
  converter.convert(object_to_code)
  and add the result of function to "code" field in DB
-
 """
 
 class Converter():
-    async def __init__(self, baseline_techs: List[str], baseline_lanuages: List[str]):
+    def __init__(self, baseline_techs: List[str], baseline_lanuages: List[str]):
         self.baseline_techs = baseline_techs
         self.baseline_languages = baseline_lanuages
 
