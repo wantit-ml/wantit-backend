@@ -25,7 +25,7 @@ should be called as
 
 class MatchForUser():
     @classmethod
-    async def search_vacances(cls, user_info: About, vacances_list: List[Vacancy]) -> List[int]:
+    async def search_vacancies(cls, user_info: About, vacances_list: List[Vacancy]) -> List[int]:
         matched_vacances_ids = []
         for sample_vacancy in vacances_list:
             if sample_vacancy.code & user_info.code >= sample_vacancy.code:

@@ -2,6 +2,7 @@ from typing import Union, List, Dict, Optional
 from datetime import datetime
 from app.db.db_setup import Vacancy, db, User, Salt, About, Achievement, Timetable, Session, Tech, Language
 from app.db.tags import get_techs, get_languages
+from app.db.vacancy import get_vacancy_by_id
 from app.ml.converter import Converter
 from app.ml.match import MatchForHR
 import hashlib
@@ -122,7 +123,7 @@ async def get_matching_users(vacancy_id: int) -> List(User):
 	users_list = []
 	for user in users:
 		users_list.append(user.about[0])
-	vacancy = db.query(Vacancy).filter(Vacancy.id == vacancy_id).one()
+	vacancy = await get_vacancy_by_id(vacancy_id)
 	matching_users_ids = await MatchForHR.search_users(vacancy, users)
 	matching_users = []
 	for user in users:
