@@ -4,7 +4,7 @@ from json import dumps
 
 from fastapi.routing import APIRouter
 from pydantic import BaseModel
-from fastapi import Response, status
+from fastapi import Response, responses, status
 
 from app.db.user import create_about, get_about
 
@@ -95,4 +95,4 @@ async def fetch_about(identifier: Union[str, int] = None):
             "telegram_id": about.telegram_id,
         }
     )
-    return Response(content=response, status_code=200)
+    return Response(content=response, media_type="application/json", status_code=200)

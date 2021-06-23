@@ -1,4 +1,4 @@
-from app import vacancy_api
+from json import dumps
 from typing import Union, List, Optional
 
 from fastapi import APIRouter, Response
@@ -30,9 +30,9 @@ class VacancyModel(BaseModel):
     email: Optional[str]
 
 
-@router.post()
+@router.post("/create_vacancy_db")
 async def create_vacancy_db(vacancy: VacancyModel):
-    create_vacancy(
+    await create_vacancy(
         vacancy.user_identifier,
         vacancy.title,
         vacancy.vacancy_code,
@@ -50,19 +50,23 @@ async def create_vacancy_db(vacancy: VacancyModel):
     return Response(content="OK", status_code=200)
 
 
-@router.get()
+@router.get("/delete_vacancy_db")
 async def delete_vacancy_db(vacancy_id: int):
-    delete_vacancy(vacancy_id)
-    return Response(content="OK", status_code=200)
+    await delete_vacancy(vacancy_id)
+    return Response(content="OK", media_type="plain/text", status_code=200)
 
 
-@router.get()
+@router.get("/get_by_user_id")
 async def get_by_user_id(user_identifier: Union[int, str]):
-    get_vacancies_by_user_id(user_identifier)
-    return Response(content="OK", status_code=200)
+    content = await get_vacancies_by_user_id(user_identifier)
+    return Response(
+        content=dumps(content),
+        media_type="application/json",
+        status_code=200,
+    )
 
 
-@router.get()
+@router.get("/get_by_id")
 async def get_by_id(vacancy_id: int):
-    get_vacancy_by_id(vacancy_id)
-    return Response(content="OK", status_code=200)
+    await get_vacancy_by_id(vacancy_id)
+    return Response(content="OK", media_type="plain/text", status_code=200)

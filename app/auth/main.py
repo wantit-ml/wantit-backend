@@ -54,7 +54,7 @@ async def create_user(user: UserRegistrationModel):
     return Response(
         content="OK",
         headers={"Content-Type": "text/plain"},
-        status_code=status.HTTP_200,
+        status_code=status.HTTP_200_OK,
     )
 
 
