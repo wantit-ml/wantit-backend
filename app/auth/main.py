@@ -45,7 +45,7 @@ class UserLoginModel(BaseModel):
     }
 )
 async def create_user(user: UserRegistrationModel, response: Response):
-    create_user_in_db(
+    await create_user_in_db(
         user.username,
         user.password,
         user.email,
