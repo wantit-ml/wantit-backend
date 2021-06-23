@@ -1,3 +1,4 @@
+from app import vacancy_api
 from typing import Union, List, Optional
 
 from fastapi import APIRouter, Response
@@ -49,40 +50,19 @@ async def create_vacancy_db(vacancy: VacancyModel):
     return Response(content="OK", status_code=200)
 
 
-"""
-async def delete_vacancy(vacancy_id: int) -> None:
-	db.query(Vacancy).filter(Vacancy.id == vacancy_id).delete(
-		synchronize_session="fetch")
-	db.commit()
-"""
+@router.get()
+async def delete_vacancy_db(vacancy_id: int):
+    delete_vacancy(vacancy_id)
+    return Response(content="OK", status_code=200)
 
 
-@router.post()
-async def delete_vacancy_db():
-    ...
+@router.get()
+async def get_by_user_id(user_identifier: Union[int, str]):
+    get_vacancies_by_user_id(user_identifier)
+    return Response(content="OK", status_code=200)
 
 
-"""
-async def get_vacancies_by_user_id(user_identifier: Union[int, str]) -> List(Vacancy):
-	user = await get_user(user_identifier)
-	firm = user.firm[0]
-	vacancies = firm.vacancies
-	return vacancies
-"""
-
-
-@router.post()
-async def get_by_user_id():
-    ...
-
-
-"""
-async def get_vacancy_by_id(vacancy_id: int) -> Vacancy:
-	vacancy = db.query(Vacancy).filter(Vacancy.id == vacancy_id).one()
-	return vacancy
-"""
-
-
-@router.post()
-async def get_by_id():
-    ...
+@router.get()
+async def get_by_id(vacancy_id: int):
+    get_vacancy_by_id(vacancy_id)
+    return Response(content="OK", status_code=200)
