@@ -15,11 +15,11 @@ converts About or Vacancy class to code num
 """
 
 class Converter():
-    def __init__(self, baseline_techs: List[str], baseline_lanuages: List[str]):
+    async def __init__(self, baseline_techs: List[str], baseline_lanuages: List[str]):
         self.baseline_techs = baseline_techs
         self.baseline_languages = baseline_lanuages
 
-    def convert(self, data: Union[About, Vacancy]) -> int:
+    async def convert(self, data: Union[About, Vacancy]) -> int:
         stack_code = ['0' for i in range(len(self.baseline_techs))]
         for tech_name in data.stack:
             stack_code[self.baseline_techs.index(tech_name)] = '1'
