@@ -193,7 +193,7 @@ async def get_matching_users(vacancy_id: int) -> List[User]:
 	for user in users:
 		users_list.append(user.about[0])
 	vacancy = await get_vacancy_by_id(vacancy_id)
-	matching_users_ids = await MatchForHR.search_users(vacancy, users)
+	matching_users_ids = await MatchForHR.search_users(vacancy, users_list)
 	matching_users = []
 	for user in users:
 		if user.id in matching_users_ids:
