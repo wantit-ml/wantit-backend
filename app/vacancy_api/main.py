@@ -1,8 +1,11 @@
+from ast import dump
+from app import vacancy_api
 from json import dumps
 from typing import Union, List, Optional
 
 from fastapi import APIRouter, Response
 from pydantic import BaseModel
+from app.db import vacancy
 
 from app.db.vacancy import (
     create_vacancy,
@@ -59,8 +62,29 @@ async def delete_vacancy_db(vacancy_id: int):
 @router.get("/get_by_user_id")
 async def get_by_user_id(user_identifier: Union[int, str]):
     content = await get_vacancies_by_user_id(user_identifier)
+    json = dumps(
+        [
+            {
+                "id": vacancy.id,
+                "title": vacancy.title,
+                "vacancy_code": vacancy.vacancy_code,
+                "description": vacancy.description,
+                "stack": vacancy.stack,
+                "salary": vacancy.salary,
+                "currency": vacancy.currency,
+                "city": vacancy.city,
+                "address": vacancy.address,
+                "type_of_vacancy": vacancy.type_of_vacancy,
+                "author": vacancy.author,
+                "phone": vacancy.phone,
+                "email": vacancy.email,
+                "code": vacancy.code,
+            }
+            for vacancy in content
+        ]
+    )
     return Response(
-        content=dumps(content),
+        content=json,
         media_type="application/json",
         status_code=200,
     )
@@ -68,5 +92,23 @@ async def get_by_user_id(user_identifier: Union[int, str]):
 
 @router.get("/get_by_id")
 async def get_by_id(vacancy_id: int):
-    await get_vacancy_by_id(vacancy_id)
-    return Response(content="OK", media_type="plain/text", status_code=200)
+    vacancy = await get_vacancy_by_id(vacancy_id)
+    json = dumps(
+        {
+            "id": vacancy.id,
+            "title": vacancy.title,
+            "vacancy_code": vacancy.vacancy_code,
+            "description": vacancy.description,
+            "stack": vacancy.stack,
+            "salary": vacancy.salary,
+            "currency": vacancy.currency,
+            "city": vacancy.city,
+            "address": vacancy.address,
+            "type_of_vacancy": vacancy.type_of_vacancy,
+            "author": vacancy.author,
+            "phone": vacancy.phone,
+            "email": vacancy.email,
+            "code": vacancy.code,
+        }
+    )
+    return Response(content=json, media_type="application/json", status_code=200)
