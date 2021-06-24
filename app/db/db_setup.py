@@ -123,6 +123,7 @@ class Vacancy(Base):
 	phone = Column(String)
 	email = Column(String)
 	code = Column(String)
+	foreign_languages = Column(ARRAY(String))
 	firm_id = Column(Integer, ForeignKey("firm.id"))
 
 
