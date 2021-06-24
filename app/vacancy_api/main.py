@@ -23,6 +23,7 @@ class VacancyModel(BaseModel):
     vacancy_code: str
     description: str
     stack: List[str]
+    foreign_languages: List[str]
     salary: int
     currency: str
     city: str
@@ -41,6 +42,7 @@ async def create_vacancy_db(vacancy: VacancyModel):
         vacancy.vacancy_code,
         vacancy.description,
         vacancy.stack,
+        vacancy.foreign_languages,
         vacancy.salary,
         vacancy.currency,
         vacancy.city,
