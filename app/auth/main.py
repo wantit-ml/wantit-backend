@@ -87,7 +87,6 @@ async def get_session(user: UserLoginModel):
         headers={"Content-Type": "text/plain"},
         status_code=status.HTTP_200_OK,
     )
-    print(type(user.username), type(":"), type(session_id))
     response.set_cookie(
         key="session_cookie", value=user.username + ":" + str(session_id), httponly=True
     )
