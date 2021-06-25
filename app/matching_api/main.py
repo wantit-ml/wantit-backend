@@ -1,4 +1,5 @@
 from typing import Union
+from fastapi.exceptions import HTTPException
 from fastapi.routing import APIRouter
 from fastapi import Response, responses, status, Cookie
 from json import dumps
@@ -15,7 +16,8 @@ router = APIRouter()
 )
 async def fetch_matching_users(vacancy_id: int, session_cookie: str = Cookie(None)):
     username, session_id = session_cookie.split(":")
-    await verify_cookie(username, session_id)
+    if await verify_cookie(username, session_id).role == "hr":
+        raise HTTPException(status_code=403)
     matching_users_raw = await get_matching_users(vacancy_id)
     matching_users = list(map(lambda user: user.id, matching_users_raw))
     response = dumps(matching_users)

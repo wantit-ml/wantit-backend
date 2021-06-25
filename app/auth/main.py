@@ -88,7 +88,7 @@ async def get_session(user: UserLoginModel):
         status_code=status.HTTP_200_OK,
     )
     response.set_cookie(
-        key="session_cookie", value=user.username + ":" + str(session_id), httponly=True
+        key="session_cookie", value=user.username + ":" + session_id, httponly=True
     )
     return response
 
@@ -97,7 +97,8 @@ async def verify_cookie(username: str, session_id: str):
     credentials_exception = HTTPException(
         status_code=401, detail="Couldn't validate credentials"
     )
-    if not await verify_session(username, session_id):
+    role = await verify_session(username, session_id)
+    if role is None:
         raise credentials_exception
     else:
-        return None
+        return role

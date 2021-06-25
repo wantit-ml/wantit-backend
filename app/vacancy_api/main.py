@@ -1,4 +1,6 @@
-from ast import dump
+from os import stat
+from fastapi.exceptions import HTTPException
+from starlette import status
 from app import vacancy_api
 from json import dumps
 from typing import Union, List, Optional
@@ -8,7 +10,7 @@ from pydantic import BaseModel
 
 from app.auth.main import verify_cookie
 from app.db import vacancy
-
+from app.db.firm import get_firm_by_user_id
 from app.db.vacancy import (
     create_vacancy,
     delete_vacancy,
@@ -39,7 +41,9 @@ class VacancyModel(BaseModel):
 @router.post("/create_vacancy_db")
 async def create_vacancy_db(vacancy: VacancyModel, session_cookie: str = Cookie(None)):
     username, session_id = session_cookie.split(":")
-    await verify_cookie(username, session_id)
+    session_user = await verify_cookie(username, session_id)
+    if not session_user.role == "hr":
+        raise HTTPException(status_code=403)
     await create_vacancy(
         vacancy.user_identifier,
         vacancy.title,
@@ -62,7 +66,9 @@ async def create_vacancy_db(vacancy: VacancyModel, session_cookie: str = Cookie(
 @router.get("/delete_vacancy_db")
 async def delete_vacancy_db(vacancy_id: int, session_cookie: str = Cookie(None)):
     username, session_id = session_cookie.split(":")
-    await verify_cookie(username, session_id)
+    user_id = await verify_cookie(username, session_id).id
+    if not vacancy_id == get_vacancies_by_user_id(user_id).id:
+        raise HTTPException(status_code=403)
     await delete_vacancy(vacancy_id)
     return Response(content="OK", media_type="plain/text", status_code=200)
 

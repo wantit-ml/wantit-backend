@@ -4,6 +4,7 @@ from typing import Union
 from json import dumps
 
 from fastapi import APIRouter
+from fastapi.exceptions import HTTPException
 from fastapi.params import Cookie
 from pydantic import BaseModel
 from fastapi import Response
@@ -27,7 +28,9 @@ class CompanyModel(BaseModel):
 @router.post("/create")
 async def create_company(company: CompanyModel, session_cookie: str = Cookie(None)):
     username, session_id = session_cookie.split(":")
-    await verify_cookie(username, session_id)
+    session_user = await verify_cookie(username, session_id)
+    if not session_user.role == "hr":
+        raise HTTPException(status_code=403)
     await create_firm(
         company.user_identifier,
         company.title,
@@ -63,7 +66,7 @@ async def get_company_by_user(user_identifier: Union[int, str], session_cookie: 
     return Response(content=json, media_type="application/json", status_code=200)
 
 
-@ router.get("/get_by_id")
+@router.get("/get_by_id")
 async def get_company_by_id(company_id: int, session_cookie: str = Cookie(None)):
     username, session_id = session_cookie.split(":")
     await verify_cookie(username, session_id)

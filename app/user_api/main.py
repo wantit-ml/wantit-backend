@@ -1,6 +1,8 @@
+from os import stat
 from typing import Union, List, Dict
 from datetime import datetime
 from json import dumps
+from fastapi.exceptions import HTTPException
 
 from fastapi.routing import APIRouter
 from pydantic import BaseModel
@@ -17,6 +19,7 @@ class UserAboutModel(BaseModel):
     identifier: Union[int, str]
     name: str
     surname: str
+    description: str
     city: str
     birthday: datetime
     gender: str
@@ -41,7 +44,11 @@ class UserAboutModel(BaseModel):
 @router.post("/fill_about")
 async def fill_about(user: UserAboutModel, session_cookie: str = Cookie(None)):
     username, session_id = session_cookie.split(":")
-    await verify_cookie(username, session_id)
+    session_user = await verify_cookie(username, session_id)
+    if user.identifier.isnumeric() and (not session_user.id == user.identifier):
+        raise HTTPException(status_code=403)
+    elif not session_user.username == user.identifier:
+        raise HTTPException(status_code=403)
     await create_about(
         user.identifier,
         user.name,
@@ -65,7 +72,7 @@ async def fill_about(user: UserAboutModel, session_cookie: str = Cookie(None)):
         user.telegram_id,
         user.timetable,
         user.achievements,
-    )
+    )  # TODO: user.description
     return Response(status_code=200)
 
 
@@ -100,5 +107,5 @@ async def fetch_about(identifier: Union[str, int] = None, session_cookie: str = 
             "vk_id": about.vk_id,
             "telegram_id": about.telegram_id,
         }
-    )
+    )  # TODO: user.description
     return Response(content=response, media_type="application/json", status_code=200)
