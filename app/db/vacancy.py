@@ -1,4 +1,5 @@
 from typing import List, Union, Optional
+from sqlalchemy.exc import IntegrityError
 from app.db.db_setup import Vacancy, db
 from app.db.user import get_user, get_about
 from app.db.tags import get_languages, get_techs, Tech, Language
@@ -49,13 +50,13 @@ async def create_vacancy(
         try:
             new_tech = Tech(title=tech)
             db.add(new_tech)
-        except:
+        except IntegrityError:
             continue
     for language in foreign_languages:
         try:
             new_language = Language(title=language)
             db.add(new_language)
-        except:
+        except IntegrityError:
             continue
     firm.vacancies.append(new_vacancy)
     db.commit()

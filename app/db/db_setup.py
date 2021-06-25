@@ -61,6 +61,7 @@ class About(Base):
     vk_id = Column(String)
     telegram_id = Column(String)
     code = Column(String)
+    description = Column(String)
     achievements = relationship("Achievement", backref="about")
 
 
