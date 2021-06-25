@@ -49,7 +49,7 @@ async def create_user(
         db.add(new_user)
         db.commit()
     else:
-        raise UserAlreadyExists
+        raise UserAlreadyExists("UserAlreadyExists")
 
 
 async def get_user(user_identifier: Union[int, str]) -> User:
