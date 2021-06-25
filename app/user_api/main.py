@@ -1,12 +1,16 @@
+from os import sep, stat
 from typing import Union, List, Dict
 from datetime import datetime
 from json import dumps
+from fastapi.exceptions import HTTPException
 
 from fastapi.routing import APIRouter
 from pydantic import BaseModel
-from fastapi import Response, responses, status
+from fastapi import Response, Cookie
+from starlette.requests import Request
 
 from app.db.user import create_about, get_about
+from app.auth.main import verify_cookie
 
 router = APIRouter()
 
@@ -15,6 +19,7 @@ class UserAboutModel(BaseModel):
     identifier: Union[int, str]
     name: str
     surname: str
+    description: str
     city: str
     birthday: datetime
     gender: str
@@ -37,11 +42,18 @@ class UserAboutModel(BaseModel):
 
 
 @router.post("/fill_about")
-async def fill_about(user: UserAboutModel):
+async def fill_about(user: UserAboutModel, session_cookie: str = Cookie(None)):
+    username, session_id = session_cookie.split(":")
+    session_user = await verify_cookie(username, session_id)
+    if user.identifier.isnumeric() and (not session_user.id == user.identifier):
+        raise HTTPException(status_code=403)
+    elif not session_user.username == user.identifier:
+        raise HTTPException(status_code=403)
     await create_about(
         user.identifier,
         user.name,
         user.surname,
+        user.description,
         user.city,
         user.birthday,
         user.gender,
@@ -69,13 +81,18 @@ async def fill_about(user: UserAboutModel):
     "/get_about",
     description="This method returns user's about page. Accepts id or username.",
 )
-async def fetch_about(identifier: Union[str, int] = None):
+async def fetch_about(identifier: Union[str, int] = None, session_cookie: str = Cookie(None)):
+    username, session_id = session_cookie.split(":")
+    await verify_cookie(username, session_id)
     about = await get_about(identifier)
+    timetable = [{"day": entry.day, "time": entry.time}
+                 for entry in about.timetable]
     response = dumps(
         {
             "user_id": about.user_id,
             "name": about.name,
             "surname": about.surname,
+            "description": about.description,
             "city": about.city,
             "birthday": about.birthday.strftime("%a,%d %b %Y %H:%M:%S"),
             "gender": about.gender,
@@ -90,6 +107,7 @@ async def fetch_about(identifier: Union[str, int] = None):
             "foreign_languages": about.foreign_languages,
             "can_move": about.can_move,
             "metro_station": about.metro_station,
+            "timetable": timetable,
             "github_id": about.github_id,
             "vk_id": about.vk_id,
             "telegram_id": about.telegram_id,

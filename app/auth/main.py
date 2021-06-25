@@ -1,4 +1,5 @@
 from typing import Dict, Union
+from fastapi.params import Cookie
 
 from fastapi.routing import APIRouter
 from fastapi import Response, status, Depends, HTTPException
@@ -9,6 +10,7 @@ from app.db.user import (
     create_session,
     UserAlreadyExists,
     WrongPassword,
+    verify_session,
 )
 
 router = APIRouter()
@@ -59,7 +61,7 @@ async def create_user(user: UserRegistrationModel):
 
 
 @router.post(
-    "/get_session",
+    "/login",
     responses={
         200: {
             "description": "Everything is OK",
@@ -73,7 +75,7 @@ async def create_user(user: UserRegistrationModel):
 )
 async def get_session(user: UserLoginModel):
     try:
-        session_id = create_session(user.username, user.password)
+        session_id = await create_session(user.username, user.password)
     except WrongPassword:
         return Response(
             content="WRONG_PASSWORD",
@@ -85,15 +87,18 @@ async def get_session(user: UserLoginModel):
         headers={"Content-Type": "text/plain"},
         status_code=status.HTTP_200_OK,
     )
-    response.set_cookie(key="session_cookie", value=session_id)
+    response.set_cookie(
+        key="session_cookie", value=user.username + ":" + session_id, httponly=True
+    )
     return response
 
 
-async def verify_session(identifier: Union[str, int], session_cookie: str):
+async def verify_cookie(username: str, session_id: str):
     credentials_exception = HTTPException(
         status_code=401, detail="Couldn't validate credentials"
     )
-    if not verify_session(identifier, session_cookie):
+    role = await verify_session(username, session_id)
+    if role is None:
         raise credentials_exception
     else:
-        return None
+        return role

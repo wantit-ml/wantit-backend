@@ -1,4 +1,6 @@
 def error_boundary(func):
+    from app.db.user import WrongPassword
+
     async def wrapper(*args, **kwargs) -> None:
         from sqlalchemy.exc import OperationalError, DatabaseError
         from app.db.db_setup import db

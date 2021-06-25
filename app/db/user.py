@@ -1,3 +1,4 @@
+from os import SEEK_CUR
 from typing import Union, List, Dict, Optional
 from datetime import datetime
 from app.db.db_setup import (
@@ -37,9 +38,10 @@ async def create_user(
         await get_user(username)
     except:
         salt = bcrypt.gensalt()
-        hash_object = hashlib.sha256(password_raw.encode() + salt)
+        hash_object = hashlib.sha256(
+            password_raw.encode() + salt)
         password = hash_object.hexdigest()
-        new_salt = Salt(salt=salt)
+        new_salt = Salt(salt=salt.decode())
         new_user = User(
             username=username, password=password, email=email, phone=phone, role=role
         )
@@ -64,6 +66,7 @@ async def create_about(
     user_identifier: Union[int, str],
     name: str,
     surname: str,
+    description: str,
     city: str,
     birthday: datetime,
     gender: str,
@@ -88,6 +91,7 @@ async def create_about(
     new_about = About(
         name=name,
         surname=surname,
+        description=description,
         city=city,
         birthday=birthday,
         gender=gender,
@@ -144,17 +148,16 @@ async def get_about(user_identifier: Union[int, str]) -> About:
 @error_boundary
 async def create_session(user_identifier: Union[int, str], password_raw: str) -> str:
     user = await get_user(user_identifier)
-    salt = user.salt[0]
-    hash_object = hashlib.sha256(password_raw.encode() + salt)
+    salt = user.salt[0].salt
+    hash_object = hashlib.sha256((password_raw + salt).encode())
     password = hash_object.hexdigest()
-    if user.password == password:
-        session_id = uuid.uuid1()
-        new_session = Session(session_id=session_id)
-        user.sessions.append(new_session)
-        db.commit()
-        return session_id
-    else:
-        raise WrongPassword
+    if not user.password == password:
+        raise WrongPassword("Bad password")
+    session_id = str(uuid.uuid1())
+    new_session = Session(session_id=session_id)
+    user.sessions.append(new_session)
+    db.commit()
+    return session_id
 
 
 @error_boundary
@@ -165,14 +168,12 @@ async def expire_session(session_id: str) -> None:
     db.commit()
 
 
-async def verify_session(user_identifier: Union[int, str], session_id: str) -> bool:
+async def verify_session(user_identifier: Union[int, str], session_id: str) -> User:
     user = await get_user(user_identifier)
-    is_valid = False
-    for session in user.sessions:
-        if session.session_id == session_id:
-            is_valid = True
-            break
-    return is_valid
+    is_valid = session_id in [session.session_id for session in user.sessions]
+    if not is_valid:
+        return None
+    return user
 
 
 async def verify_role(user_identifier: Union[int, str], role) -> bool:
@@ -205,6 +206,7 @@ async def get_matching_users(vacancy_id: int) -> List[User]:
         if user.id in matching_users_ids:
             matching_users.append(user)
     return matching_users
+
 
 async def get_role_by_session_id(session_id: str):
     session = db.Query(Session).filter(Session.session_id == session_id).one()
