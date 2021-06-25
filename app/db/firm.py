@@ -1,7 +1,9 @@
 from typing import Union
 from app.db.db_setup import db, User, Firm
 from app.db.user import get_user
+from app.db.error_boundary import error_boundary
 
+@error_boundary
 async def create_firm(
     user_identifier: Union[int, str],
     title: str,

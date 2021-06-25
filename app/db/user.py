@@ -15,6 +15,7 @@ from app.db.db_setup import (
 from app.db.tags import get_techs, get_languages
 from app.ml.converter import Converter
 from app.ml.match import MatchForHR
+from app.db.error_boundary import error_boundary
 import hashlib
 import bcrypt
 import uuid
@@ -28,6 +29,7 @@ class WrongPassword(Exception):
     ...
 
 
+@error_boundary
 async def create_user(
     username: str, password_raw: str, email: str, phone: str, role: str
 ) -> None:
@@ -57,6 +59,7 @@ async def get_user(user_identifier: Union[int, str]) -> User:
         return user
 
 
+@error_boundary
 async def create_about(
     user_identifier: Union[int, str],
     name: str,
@@ -138,6 +141,7 @@ async def get_about(user_identifier: Union[int, str]) -> About:
     return user.about[0]
 
 
+@error_boundary
 async def create_session(user_identifier: Union[int, str], password_raw: str) -> str:
     user = await get_user(user_identifier)
     salt = user.salt[0]
@@ -153,6 +157,7 @@ async def create_session(user_identifier: Union[int, str], password_raw: str) ->
         raise WrongPassword
 
 
+@error_boundary
 async def expire_session(session_id: str) -> None:
     db.query(Session).filter(Session.session_id == session_id).delete(
         synchronize_session="fetch"
@@ -175,6 +180,7 @@ async def verify_role(user_identifier: Union[int, str], role) -> bool:
     return user.role == role
 
 
+@error_boundary
 async def convert_about(user_identifier: Union[int, str]) -> None:
     about = await get_about(user_identifier)
     techs = await get_techs()

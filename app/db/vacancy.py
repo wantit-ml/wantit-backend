@@ -3,10 +3,12 @@ from app.db.db_setup import Vacancy, db
 from app.db.user import get_user, get_about
 from app.db.tags import get_languages, get_techs
 from app.db.firm import get_firm_by_user_id, get_firm_by_id
+from app.db.error_boundary import error_boundary
 from app.ml.converter import Converter
 from app.ml.match import MatchForUser
 
 
+@error_boundary
 async def create_vacancy(
     user_identifier: Union[int, str],
     title: str,
@@ -48,6 +50,7 @@ async def create_vacancy(
     await convert_vacancy(new_vacancy.id)
 
 
+@error_boundary
 async def delete_vacancy(vacancy_id: int) -> None:
     db.query(Vacancy).filter(Vacancy.id == vacancy_id).delete(
         synchronize_session="fetch"
@@ -67,6 +70,7 @@ async def get_vacancy_by_id(vacancy_id: int) -> Vacancy:
     return vacancy
 
 
+@error_boundary
 async def convert_vacancy(vacancy_id: int) -> None:
     vacancy = await get_vacancy_by_id(vacancy_id)
     techs = await get_techs()
