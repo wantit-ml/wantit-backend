@@ -1,7 +1,7 @@
 from typing import List, Union, Optional
 from app.db.db_setup import Vacancy, db
 from app.db.user import get_user, get_about
-from app.db.tags import get_languages, get_techs
+from app.db.tags import get_languages, get_techs, Tech, Language
 from app.db.firm import get_firm_by_user_id, get_firm_by_id
 from app.db.error_boundary import error_boundary
 from app.ml.converter import Converter
@@ -45,6 +45,18 @@ async def create_vacancy(
         phone=phone,
         email=email,
     )
+    for tech in stack:
+        try:
+            new_tech = Tech(title=tech)
+            db.add(new_tech)
+        except:
+            continue
+    for language in foreign_languages:
+        try:
+            new_language = Language(title=language)
+            db.add(new_language)
+        except:
+            continue
     firm.vacancies.append(new_vacancy)
     db.commit()
     await convert_vacancy(new_vacancy.id)
