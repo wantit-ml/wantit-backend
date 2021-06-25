@@ -1,9 +1,7 @@
-from os import stat
 from fastapi.exceptions import HTTPException
-from starlette import status
-from app import vacancy_api
 from json import dumps
 from typing import Union, List, Optional
+from base64 import urlsafe_b64decode
 
 from fastapi import APIRouter, Response, Cookie
 from pydantic import BaseModel
@@ -40,7 +38,8 @@ class VacancyModel(BaseModel):
 
 @router.post("/create_vacancy_db")
 async def create_vacancy_db(vacancy: VacancyModel, session_cookie: str = Cookie(None)):
-    username, session_id = session_cookie.split(":")
+    username, session_id = urlsafe_b64decode(
+        session_cookie).decode().split(":")
     session_user = await verify_cookie(username, session_id)
     if not session_user.role == "hr":
         raise HTTPException(status_code=403)
@@ -65,7 +64,8 @@ async def create_vacancy_db(vacancy: VacancyModel, session_cookie: str = Cookie(
 
 @router.get("/delete_vacancy_db")
 async def delete_vacancy_db(vacancy_id: int, session_cookie: str = Cookie(None)):
-    username, session_id = session_cookie.split(":")
+    username, session_id = urlsafe_b64decode(
+        session_cookie).decode().split(":")
     user_id = await verify_cookie(username, session_id).id
     if not vacancy_id == get_vacancies_by_user_id(user_id).id:
         raise HTTPException(status_code=403)
@@ -108,7 +108,8 @@ async def get_by_user_id(user_identifier: Union[int, str], session_cookie: str =
 
 @router.get("/get_by_id")
 async def get_by_id(vacancy_id: int, session_cookie: str = Cookie(None)):
-    username, session_id = session_cookie.split(":")
+    username, session_id = urlsafe_b64decode(
+        session_cookie).decode().split(":")
     await verify_cookie(username, session_id)
     vacancy = await get_vacancy_by_id(vacancy_id)
     json = dumps(

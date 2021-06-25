@@ -1,7 +1,6 @@
-from ast import dump
-from os import stat
 from typing import Union
 from json import dumps
+from base64 import urlsafe_b64decode
 
 from fastapi import APIRouter
 from fastapi.exceptions import HTTPException
@@ -27,7 +26,8 @@ class CompanyModel(BaseModel):
 
 @router.post("/create")
 async def create_company(company: CompanyModel, session_cookie: str = Cookie(None)):
-    username, session_id = session_cookie.split(":")
+    username, session_id = urlsafe_b64decode(
+        session_cookie).decode().split(":")
     session_user = await verify_cookie(username, session_id)
     if not session_user.role == "hr":
         raise HTTPException(status_code=403)
@@ -45,7 +45,8 @@ async def create_company(company: CompanyModel, session_cookie: str = Cookie(Non
 
 @router.get("/get_by_user")
 async def get_company_by_user(user_identifier: Union[int, str], session_cookie: str = Cookie(None)):
-    username, session_id = session_cookie.split(":")
+    username, session_id = urlsafe_b64decode(
+        session_cookie).decode().split(":")
     await verify_cookie(username, session_id)
     company = await get_firm_by_user_id(user_identifier)
     json = dumps(
@@ -68,7 +69,8 @@ async def get_company_by_user(user_identifier: Union[int, str], session_cookie: 
 
 @router.get("/get_by_id")
 async def get_company_by_id(company_id: int, session_cookie: str = Cookie(None)):
-    username, session_id = session_cookie.split(":")
+    username, session_id = urlsafe_b64decode(
+        session_cookie).decode().split(":")
     await verify_cookie(username, session_id)
     company = await get_firm_by_id(company_id)
     json = dumps(

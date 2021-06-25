@@ -1,13 +1,12 @@
-from os import sep, stat
 from typing import Union, List, Dict
 from datetime import datetime
 from json import dumps
 from fastapi.exceptions import HTTPException
+from base64 import urlsafe_b64decode
 
 from fastapi.routing import APIRouter
 from pydantic import BaseModel
 from fastapi import Response, Cookie
-from starlette.requests import Request
 
 from app.db.user import create_about, get_about
 from app.auth.main import verify_cookie
@@ -43,7 +42,8 @@ class UserAboutModel(BaseModel):
 
 @router.post("/fill_about")
 async def fill_about(user: UserAboutModel, session_cookie: str = Cookie(None)):
-    username, session_id = session_cookie.split(":")
+    username, session_id = urlsafe_b64decode(
+        session_cookie).decode().split(":")
     session_user = await verify_cookie(username, session_id)
     if user.identifier.isnumeric() and (not session_user.id == user.identifier):
         raise HTTPException(status_code=403)
@@ -82,7 +82,8 @@ async def fill_about(user: UserAboutModel, session_cookie: str = Cookie(None)):
     description="This method returns user's about page. Accepts id or username.",
 )
 async def fetch_about(identifier: Union[str, int] = None, session_cookie: str = Cookie(None)):
-    username, session_id = session_cookie.split(":")
+    username, session_id = urlsafe_b64decode(
+        session_cookie).decode().split(":")
     await verify_cookie(username, session_id)
     about = await get_about(identifier)
     timetable = [{"day": entry.day, "time": entry.time}

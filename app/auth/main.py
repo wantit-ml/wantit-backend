@@ -1,5 +1,6 @@
 from typing import Dict, Union
 from fastapi.params import Cookie
+from base64 import urlsafe_b64encode
 
 from fastapi.routing import APIRouter
 from fastapi import Response, status, Depends, HTTPException
@@ -88,7 +89,7 @@ async def get_session(user: UserLoginModel):
         status_code=status.HTTP_200_OK,
     )
     response.set_cookie(
-        key="session_cookie", value=user.username + ":" + session_id, httponly=True
+        key="session_cookie", value=urlsafe_b64encode((user.username + ":" + session_id).encode()).decode(), httponly=True
     )
     return response
 
