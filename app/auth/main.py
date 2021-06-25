@@ -93,8 +93,7 @@ async def get_session(user: UserLoginModel):
     return response
 
 
-async def verify_cookie(session_cookie: Cookie = Depends()):
-    username, session_id = session_cookie.split(":")
+async def verify_cookie(username: str, session_id: str):
     credentials_exception = HTTPException(
         status_code=401, detail="Couldn't validate credentials"
     )

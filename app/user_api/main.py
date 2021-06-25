@@ -4,9 +4,11 @@ from json import dumps
 
 from fastapi.routing import APIRouter
 from pydantic import BaseModel
-from fastapi import Response, responses, status
+from fastapi import Response, Cookie
+from starlette.requests import Request
 
 from app.db.user import create_about, get_about
+from app.auth.main import verify_cookie
 
 router = APIRouter()
 
@@ -37,7 +39,9 @@ class UserAboutModel(BaseModel):
 
 
 @router.post("/fill_about")
-async def fill_about(user: UserAboutModel):
+async def fill_about(user: UserAboutModel, session_cookie: str = Cookie(None)):
+    username, session_id = session_cookie.split(":")
+    await verify_cookie(username, session_id)
     await create_about(
         user.identifier,
         user.name,
@@ -69,7 +73,9 @@ async def fill_about(user: UserAboutModel):
     "/get_about",
     description="This method returns user's about page. Accepts id or username.",
 )
-async def fetch_about(identifier: Union[str, int] = None):
+async def fetch_about(identifier: Union[str, int] = None, session_cookie: str = Cookie(None)):
+    username, session_id = session_cookie.split(":")
+    await verify_cookie(username, session_id)
     about = await get_about(identifier)
     response = dumps(
         {

@@ -4,10 +4,12 @@ from typing import Union
 from json import dumps
 
 from fastapi import APIRouter
+from fastapi.params import Cookie
 from pydantic import BaseModel
 from fastapi import Response
 
 from app.db.firm import create_firm, get_firm_by_id, get_firm_by_user_id
+from app.auth.main import verify_cookie
 
 router = APIRouter()
 
@@ -23,7 +25,9 @@ class CompanyModel(BaseModel):
 
 
 @router.post("/create")
-async def create_company(company: CompanyModel):
+async def create_company(company: CompanyModel, session_cookie: str = Cookie(None)):
+    username, session_id = session_cookie.split(":")
+    await verify_cookie(username, session_id)
     await create_firm(
         company.user_identifier,
         company.title,
@@ -37,7 +41,9 @@ async def create_company(company: CompanyModel):
 
 
 @router.get("/get_by_user")
-async def get_company_by_user(user_identifier: Union[int, str]):
+async def get_company_by_user(user_identifier: Union[int, str], session_cookie: str = Cookie(None)):
+    username, session_id = session_cookie.split(":")
+    await verify_cookie(username, session_id)
     company = await get_firm_by_user_id(user_identifier)
     json = dumps(
         {
@@ -57,8 +63,10 @@ async def get_company_by_user(user_identifier: Union[int, str]):
     return Response(content=json, media_type="application/json", status_code=200)
 
 
-@router.get("/get_by_id")
-async def get_company_by_id(company_id: int):
+@ router.get("/get_by_id")
+async def get_company_by_id(company_id: int, session_cookie: str = Cookie(None)):
+    username, session_id = session_cookie.split(":")
+    await verify_cookie(username, session_id)
     company = await get_firm_by_id(company_id)
     json = dumps(
         {
