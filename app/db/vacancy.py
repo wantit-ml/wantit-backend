@@ -45,6 +45,18 @@ async def create_vacancy(
         phone=phone,
         email=email,
     )
+    for tech in stack:
+        try:
+            new_tech = Tech(title=tech)
+            db.add(new_tech)
+        except:
+            continue
+    for language in foreign_languages:
+        try:
+            new_language = Language(title=language)
+            db.add(new_language)
+        except:
+            continue
     firm.vacancies.append(new_vacancy)
     db.commit()
     await convert_vacancy(new_vacancy.id)
