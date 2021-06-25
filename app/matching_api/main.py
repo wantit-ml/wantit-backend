@@ -1,7 +1,8 @@
 from typing import Union
 from fastapi.exceptions import HTTPException
 from fastapi.routing import APIRouter
-from fastapi import Response, responses, status, Cookie
+from fastapi import Response, Cookie
+from base64 import urlsafe_b64decode
 from json import dumps
 from app.db.user import get_matching_users
 from app.db.vacancy import get_matching_vacancies
@@ -15,7 +16,8 @@ router = APIRouter()
     description="This method returns matching users for vacancy. Accepts vacancy id.",
 )
 async def fetch_matching_users(vacancy_id: int, session_cookie: str = Cookie(None)):
-    username, session_id = session_cookie.split(":")
+    username, session_id = urlsafe_b64decode(
+        session_cookie).decode().split(":")
     if await verify_cookie(username, session_id).role == "hr":
         raise HTTPException(status_code=403)
     matching_users_raw = await get_matching_users(vacancy_id)
@@ -29,7 +31,8 @@ async def fetch_matching_users(vacancy_id: int, session_cookie: str = Cookie(Non
     description="This method returns matching vacancies for user. Accepts user indentifier",
 )
 async def fetch_matching_vacancies(user_identifier: Union[int, str], session_cookie: str = Cookie(None)):
-    username, session_id = session_cookie.split(":")
+    username, session_id = urlsafe_b64decode(
+        session_cookie).decode().split(":")
     await verify_cookie(username, session_id)
     matching_vacancies_raw = await get_matching_vacancies(user_identifier)
     matching_vacancies = list(
