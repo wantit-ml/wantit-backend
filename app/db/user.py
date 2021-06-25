@@ -199,3 +199,8 @@ async def get_matching_users(vacancy_id: int) -> List[User]:
 		if user.id in matching_users_ids:
 			matching_users.append(user)
 	return matching_users
+
+async def get_role_by_session_id(session_id: str):
+	session = db.Query(Session).filter(Session.session_id == session_id).one()
+	user = await get_user(session.user_id)
+	return user.role
