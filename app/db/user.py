@@ -15,6 +15,7 @@ from app.db.db_setup import (
 from app.db.tags import get_techs, get_languages
 from app.ml.converter import Converter
 from app.ml.match import MatchForHR
+from app.db.error_boundary import error_boundary
 import hashlib
 import bcrypt
 import uuid
@@ -28,6 +29,7 @@ class WrongPassword(Exception):
     ...
 
 
+@error_boundary
 async def create_user(
     username: str, password_raw: str, email: str, phone: str, role: str
 ) -> None:
@@ -37,7 +39,7 @@ async def create_user(
         salt = bcrypt.gensalt()
         hash_object = hashlib.sha256(password_raw.encode() + salt)
         password = hash_object.hexdigest()
-        new_salt = Salt(salt=salt.decode())
+        new_salt = Salt(salt=salt)
         new_user = User(
             username=username, password=password, email=email, phone=phone, role=role
         )
@@ -57,6 +59,7 @@ async def get_user(user_identifier: Union[int, str]) -> User:
         return user
 
 
+@error_boundary
 async def create_about(
     user_identifier: Union[int, str],
     name: str,
@@ -138,12 +141,12 @@ async def get_about(user_identifier: Union[int, str]) -> About:
     return user.about[0]
 
 
+@error_boundary
 async def create_session(user_identifier: Union[int, str], password_raw: str) -> str:
     user = await get_user(user_identifier)
-    salt = user.salt[0].salt
-    hash_object = hashlib.sha256(password_raw.encode() + salt.encode())
+    salt = user.salt[0]
+    hash_object = hashlib.sha256(password_raw.encode() + salt)
     password = hash_object.hexdigest()
-    print(user.password, password)
     if user.password == password:
         session_id = uuid.uuid1()
         new_session = Session(session_id=session_id)
@@ -154,6 +157,7 @@ async def create_session(user_identifier: Union[int, str], password_raw: str) ->
         raise WrongPassword
 
 
+@error_boundary
 async def expire_session(session_id: str) -> None:
     db.query(Session).filter(Session.session_id == session_id).delete(
         synchronize_session="fetch"
@@ -176,6 +180,7 @@ async def verify_role(user_identifier: Union[int, str], role) -> bool:
     return user.role == role
 
 
+@error_boundary
 async def convert_about(user_identifier: Union[int, str]) -> None:
     about = await get_about(user_identifier)
     techs = await get_techs()
@@ -200,3 +205,9 @@ async def get_matching_users(vacancy_id: int) -> List[User]:
         if user.id in matching_users_ids:
             matching_users.append(user)
     return matching_users
+
+
+async def get_role_by_session_id(session_id: str):
+    session = db.Query(Session).filter(Session.session_id == session_id).one()
+    user = await get_user(session.user_id)
+    return user.role
