@@ -1,5 +1,6 @@
 from typing import List
 from app.db.db_setup import db, Tech, Language
+from app.db.error_boundary import error_boundary
 
 async def get_techs() -> List[str]:
     raw_techs = db.query(Tech).all()
