@@ -1,4 +1,4 @@
-from os import stat
+from os import sep, stat
 from typing import Union, List, Dict
 from datetime import datetime
 from json import dumps
@@ -53,6 +53,7 @@ async def fill_about(user: UserAboutModel, session_cookie: str = Cookie(None)):
         user.identifier,
         user.name,
         user.surname,
+        user.description,
         user.city,
         user.birthday,
         user.gender,
@@ -72,7 +73,7 @@ async def fill_about(user: UserAboutModel, session_cookie: str = Cookie(None)):
         user.telegram_id,
         user.timetable,
         user.achievements,
-    )  # TODO: user.description
+    )
     return Response(status_code=200)
 
 
@@ -84,11 +85,14 @@ async def fetch_about(identifier: Union[str, int] = None, session_cookie: str = 
     username, session_id = session_cookie.split(":")
     await verify_cookie(username, session_id)
     about = await get_about(identifier)
+    timetable = [{"day": entry.day, "time": entry.time}
+                 for entry in about.timetable]
     response = dumps(
         {
             "user_id": about.user_id,
             "name": about.name,
             "surname": about.surname,
+            "description": about.description,
             "city": about.city,
             "birthday": about.birthday.strftime("%a,%d %b %Y %H:%M:%S"),
             "gender": about.gender,
@@ -103,9 +107,10 @@ async def fetch_about(identifier: Union[str, int] = None, session_cookie: str = 
             "foreign_languages": about.foreign_languages,
             "can_move": about.can_move,
             "metro_station": about.metro_station,
+            "timetable": timetable,
             "github_id": about.github_id,
             "vk_id": about.vk_id,
             "telegram_id": about.telegram_id,
         }
-    )  # TODO: user.description
+    )
     return Response(content=response, media_type="application/json", status_code=200)

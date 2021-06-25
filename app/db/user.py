@@ -66,6 +66,7 @@ async def create_about(
     user_identifier: Union[int, str],
     name: str,
     surname: str,
+    description: str,
     city: str,
     birthday: datetime,
     gender: str,
@@ -90,6 +91,7 @@ async def create_about(
     new_about = About(
         name=name,
         surname=surname,
+        description=description,
         city=city,
         birthday=birthday,
         gender=gender,
