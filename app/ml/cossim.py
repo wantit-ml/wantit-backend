@@ -9,6 +9,8 @@ from app.db.db_setup import About, Vacancy
 
 class SimCosModel():
     def __init__(self, weights_path="SO_vectors_200.bin"):
+        import sys
+        sys.stderr.write("test stderr\n")
         logging.warning("Begin reading file")
         self.embeddings = KeyedVectors.load_word2vec_format(weights_path, binary=True)
         logging.warning("Ended reading file")
