@@ -9,7 +9,7 @@ from app.ml.converter import Converter
 from app.ml.match import MatchForUser
 
 
-@error_boundary
+#@error_boundary
 async def create_vacancy(
     user_identifier: Union[int, str],
     title: str,
@@ -50,13 +50,17 @@ async def create_vacancy(
         try:
             new_tech = Tech(title=tech)
             db.add(new_tech)
+            db.commit()
         except IntegrityError:
+            db.rollback()
             continue
     for language in foreign_languages:
         try:
             new_language = Language(title=language)
             db.add(new_language)
+            db.commit()
         except IntegrityError:
+            db.rollback()
             continue
     firm.vacancies.append(new_vacancy)
     db.commit()
