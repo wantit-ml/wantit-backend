@@ -9,7 +9,7 @@ from app.ml.converter import Converter
 from app.ml.match import MatchForUser
 
 
-#@error_boundary
+@error_boundary
 async def create_vacancy(
     user_identifier: Union[int, str],
     title: str,
