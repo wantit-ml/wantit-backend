@@ -128,13 +128,17 @@ async def create_about(
         try:
             new_tech = Tech(title=tech)
             db.add(new_tech)
+            db.commit()
         except:
+            db.rollback()
             continue
     for language in foreign_languages:
         try:
             new_language = Language(title=language)
             db.add(new_language)
+            db.commit()
         except:
+            db.rollback()
             continue
     db.commit()
     await convert_about(user_identifier)
@@ -198,7 +202,10 @@ async def get_matching_users(vacancy_id: int) -> List[User]:
     users = db.query(User).all()
     users_list = []
     for user in users:
-        users_list.append(user.about[0])
+        try:
+            users_list.append(user.about[0])
+        except:
+            continue
     vacancy = await get_vacancy_by_id(vacancy_id)
     matching_users_ids = await MatchForHR.search_users(vacancy, users_list)
     matching_users = []
