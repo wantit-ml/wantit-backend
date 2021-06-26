@@ -1,5 +1,6 @@
 from typing import List
 from app.db.db_setup import About, Vacancy
+from cossim import SimCosModel
 
 """ 
 should be called as 
@@ -8,6 +9,8 @@ should be called as
 
 
 class MatchForHR():
+    cute_model = SimCosModel()
+
     @classmethod
     async def search_users(cls, vacancy: Vacancy, users_list: List[About]) -> List[int]:
         matched_users_ids = []
@@ -24,7 +27,7 @@ class MatchForHR():
 
             if vacancy_code & candidate_code >= vacancy_code:
                 matched_users_ids.append(candidate.id)
-        return matched_users_ids
+        return cls.cute_model.rang_candidates(vacancy, matched_users_ids)
 
 
 """ 
@@ -34,6 +37,8 @@ should be called as
 
 
 class MatchForUser():
+    cute_model = SimCosModel()
+
     @classmethod
     async def search_vacancies(cls, user_info: About, vacancies_list: List[Vacancy]) -> List[int]:
         matched_vacancies_ids = []
@@ -44,12 +49,10 @@ class MatchForUser():
             user_info_code = int(user_info.code, 2)
 
             if sample_vacancy_code_len > user_info_code_len:
-                user_info_code <<= (
-                    sample_vacancy_code_len - user_info_code_len)
+                user_info_code <<= (sample_vacancy_code_len - user_info_code_len)
             else:
-                sample_vacancy_code <<= (
-                    user_info_code_len - sample_vacancy_code_len)
+                sample_vacancy_code <<= (user_info_code_len - sample_vacancy_code_len)
 
             if sample_vacancy_code & user_info_code >= sample_vacancy_code:
                 matched_vacancies_ids.append(sample_vacancy.id)
-        return matched_vacancies_ids
+        return cls.cute_model.rang_candidates(user_info, matched_vacancies_ids)
