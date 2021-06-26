@@ -133,3 +133,4 @@ dmypy.json
 .salt
 *.db
 *.sql
+SO_vectors_200.bin
