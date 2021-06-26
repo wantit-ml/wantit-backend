@@ -1,6 +1,6 @@
 from typing import List
 from app.db.db_setup import About, Vacancy
-from cossim import SimCosModel
+from app.ml.cossim import SimCosModel
 
 """ 
 should be called as 
