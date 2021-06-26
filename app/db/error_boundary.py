@@ -2,7 +2,7 @@ def error_boundary(func):
     from app.db.user import WrongPassword
 
     async def wrapper(*args, **kwargs) -> None:
-        from sqlalchemy.exc import OperationalError, DatabaseError
+        from sqlalchemy.exc import OperationalError, DatabaseError, InternalError
         from app.db.db_setup import db
         from app.db.user import UserAlreadyExists, WrongPassword
 
@@ -12,7 +12,7 @@ def error_boundary(func):
             raise UserAlreadyExists
         except WrongPassword:
             raise WrongPassword
-        except OperationalError:
+        except (OperationalError, InternalError):
             db.rollback()
             db.commit()
         except DatabaseError:
