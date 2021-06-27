@@ -7,6 +7,7 @@ from base64 import urlsafe_b64decode
 from fastapi.routing import APIRouter
 from pydantic import BaseModel
 from fastapi import Response, Cookie
+from starlette.requests import cookie_parser
 
 from app.db.user import create_about, get_about
 from app.db.db_setup import User
@@ -46,10 +47,10 @@ async def fill_about(user: UserAboutModel, session_cookie: str = Cookie(None)):
     username, session_id = urlsafe_b64decode(
         session_cookie).decode().split(":")
     session_user = await verify_cookie(username, session_id)
-    if user.identifier.isnumeric() and (not session_user.id == user.identifier):
+    """if type(user.identifier) == int and (not session_user.id == user.identifier):
         raise HTTPException(status_code=403)
     elif not session_user.username == user.identifier:
-        raise HTTPException(status_code=403)
+        raise HTTPException(status_code=403)"""
     await create_about(
         user.identifier,
         user.name,
@@ -83,6 +84,8 @@ async def fill_about(user: UserAboutModel, session_cookie: str = Cookie(None)):
     description="This method returns user's about page. Accepts id or username.",
 )
 async def fetch_about(identifier: Union[str, int] = None, session_cookie: str = Cookie(None)):
+    if session_cookie is None:
+        raise HTTPException(status_code=400, detail="Cookie is empty.")
     username, session_id = urlsafe_b64decode(
         session_cookie).decode().split(":")
     await verify_cookie(username, session_id)
@@ -120,6 +123,8 @@ async def fetch_about(identifier: Union[str, int] = None, session_cookie: str = 
 
 @router.get("/get_user")
 async def get_user_by_cookie(session_cookie: str = Cookie(None)):
+    if session_cookie is None:
+        raise HTTPException(status_code=400, detail="session_cookie is empty.")
     username, session_id = urlsafe_b64decode(
         session_cookie).decode().split(":")
     user: User = await verify_cookie(username, session_id)

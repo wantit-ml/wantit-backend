@@ -124,6 +124,7 @@ async def create_about(
         )
         new_about.achievements.append(new_achievement)
     user.about.append(new_about)
+    db.commit()
     for tech in stack:
         try:
             new_tech = Tech(title=tech)
@@ -198,7 +199,6 @@ async def convert_about(user_identifier: Union[int, str]) -> None:
 
 async def get_matching_users(vacancy_id: int) -> List[User]:
     from app.db.vacancy import get_vacancy_by_id
-
     users = db.query(User).all()
     users_list = []
     for user in users:
