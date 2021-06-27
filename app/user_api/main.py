@@ -9,6 +9,7 @@ from pydantic import BaseModel
 from fastapi import Response, Cookie
 
 from app.db.user import create_about, get_about
+from app.db.db_setup import User
 from app.auth.main import verify_cookie
 
 router = APIRouter()
@@ -112,6 +113,23 @@ async def fetch_about(identifier: Union[str, int] = None, session_cookie: str = 
             "github_id": about.github_id,
             "vk_id": about.vk_id,
             "telegram_id": about.telegram_id,
+        }
+    )
+    return Response(content=response, media_type="application/json", status_code=200)
+
+
+@router.get("/get_user")
+async def get_user_by_cookie(session_cookie: str = Cookie(None)):
+    username, session_id = urlsafe_b64decode(
+        session_cookie).decode().split(":")
+    user: User = await verify_cookie(username, session_id)
+    response = dumps(
+        {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "phone": user.phone,
+            "role": user.role
         }
     )
     return Response(content=response, media_type="application/json", status_code=200)
