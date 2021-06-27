@@ -22,7 +22,7 @@ class MatchForHR():
             else:
                 vacancy_code <<= (candidate_code_len - vacancy_code_len)
 
-            if vacancy_code & candidate_code >= vacancy_code:
+            if vacancy_code & candidate_code > 0:
                 matched_users_ids.append(candidate.id)
         return matched_users_ids
 
@@ -50,6 +50,6 @@ class MatchForUser():
                 sample_vacancy_code <<= (
                     user_info_code_len - sample_vacancy_code_len)
 
-            if sample_vacancy_code & user_info_code >= sample_vacancy_code:
+            if sample_vacancy_code & user_info_code >0:
                 matched_vacancies_ids.append(sample_vacancy.id)
         return matched_vacancies_ids
