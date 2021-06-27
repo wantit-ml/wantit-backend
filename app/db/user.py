@@ -215,7 +215,11 @@ async def get_matching_users(vacancy_id: int) -> List[User]:
     return matching_users
 
 
-async def get_role_by_session_id(session_id: str):
+async def get_role_by_session_id(session_id: str) -> str:
     session = db.Query(Session).filter(Session.session_id == session_id).one()
     user = await get_user(session.user_id)
     return user.role
+
+async def get_all_abouts() -> List[About]:
+    abouts_list = db.Query(About).all()
+    return abouts_list
