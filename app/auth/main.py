@@ -1,6 +1,6 @@
 from typing import Dict, Union
 from fastapi.params import Cookie
-from base64 import urlsafe_b64encode
+from base64 import urlsafe_b64encode, urlsafe_b64decode
 
 from fastapi.routing import APIRouter
 from fastapi import Response, status, Depends, HTTPException
@@ -12,6 +12,7 @@ from app.db.user import (
     UserAlreadyExists,
     WrongPassword,
     verify_session,
+    expire_session
 )
 
 router = APIRouter()
@@ -92,6 +93,17 @@ async def get_session(user: UserLoginModel):
         key="session_cookie", value=urlsafe_b64encode((user.username + ":" + session_id).encode()).decode(), httponly=True, samesite="None", secure=True
     )
     return response
+
+
+@router.get("/logout")
+async def logout(session_cookie: str = Cookie(None)):
+    username, session_id = urlsafe_b64decode(
+        session_cookie).decode().split(":")
+    session_user = await verify_cookie(username, session_id)
+    if not session_user.username == username:
+        raise HTTPException(status_code=401)
+    await expire_session(session_id)
+    return Response(status_code=200)
 
 
 async def verify_cookie(username: str, session_id: str):
