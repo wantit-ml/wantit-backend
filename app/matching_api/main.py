@@ -75,7 +75,6 @@ async def fetch_all_matching_users(session_cookie: str = Cookie(None)):
                 "can_move": about.can_move,
                 "stack": about.stack
             })
-    print(matching_users)
     return Response(content=dumps(matching_users), status_code=200)
 
 

@@ -214,6 +214,7 @@ async def get_matching_users(vacancy_id: int) -> List[User]:
     for user in users:
         if user.id in matching_users_ids:
             matching_users.append(user)
+    print(matching_users)
     return matching_users
 
 
