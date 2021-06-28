@@ -19,7 +19,6 @@ should be called as
 class MatchForHR():
     @classmethod
     async def search_users(cls, vacancy: Vacancy, users_list: List[About]) -> List[int]:
-        print("КАЗАХСТАН УГРОЖАЕТ НАМ БОМБАРДИРОВКОЙ")
         matched_users_ids = []
         skills_needed = vacancy.code.count("1")
         for candidate in users_list:
@@ -27,6 +26,8 @@ class MatchForHR():
             candidate_code_len = len(candidate.code)
             vacancy_code = int(vacancy.code, 2)
             candidate_code = int(candidate.code, 2)
+
+            print(vacancy_code, candidate_code)
 
             if vacancy_code_len > candidate_code_len:
                 candidate_code <<= (vacancy_code_len - candidate_code_len)
@@ -37,6 +38,7 @@ class MatchForHR():
             if (fullfilling) / skills_needed >= 0.6:
                 print(fullfilling, skills_needed)
                 matched_users_ids.append(candidate.id)
+        print(matched_users_ids)
         return matched_users_ids
 
 
