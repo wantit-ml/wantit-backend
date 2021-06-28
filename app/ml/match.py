@@ -35,6 +35,7 @@ class MatchForHR():
             else:
                 vacancy_code <<= (candidate_code_len - vacancy_code_len)
 
+
             if count_ones(vacancy_code & candidate_code) / skills_needed >= 0.6:
                 matched_users_ids.append(candidate.id)
         return cls.cute_model.rang_candidates(vacancy, matched_users_ids)
@@ -65,7 +66,8 @@ class MatchForUser():
                 user_info_code <<= (sample_vacancy_code_len - user_info_code_len)
             else:
                 sample_vacancy_code <<= (user_info_code_len - sample_vacancy_code_len)
-
+               
+             
             if count_ones(sample_vacancy_code & user_info_code) / skills_needed >= 0.6:
                 matched_vacancies_ids.append(sample_vacancy.id)
         return cls.cute_model.rang_candidates(user_info, matched_vacancies_ids)

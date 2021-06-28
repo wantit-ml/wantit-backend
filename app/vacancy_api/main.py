@@ -12,6 +12,7 @@ from app.db.firm import get_firm_by_user_id
 from app.db.vacancy import (
     create_vacancy,
     delete_vacancy,
+    get_all_vacancies,
     get_vacancies_by_user_id,
     get_vacancy_by_id,
 )
@@ -74,9 +75,7 @@ async def delete_vacancy_db(vacancy_id: int, session_cookie: str = Cookie(None))
 
 
 @router.get("/get_by_user_id")
-async def get_by_user_id(user_identifier: Union[int, str], session_cookie: str = Cookie(None)):
-    username, session_id = session_cookie.split(":")
-    await verify_cookie(username, session_id)
+async def get_by_user_id(user_identifier: Union[int, str]):
     content = await get_vacancies_by_user_id(user_identifier)
     json = dumps(
         [
@@ -107,10 +106,7 @@ async def get_by_user_id(user_identifier: Union[int, str], session_cookie: str =
 
 
 @router.get("/get_by_id")
-async def get_by_id(vacancy_id: int, session_cookie: str = Cookie(None)):
-    username, session_id = urlsafe_b64decode(
-        session_cookie).decode().split(":")
-    await verify_cookie(username, session_id)
+async def get_by_id(vacancy_id: int):
     vacancy = await get_vacancy_by_id(vacancy_id)
     json = dumps(
         {
@@ -130,4 +126,29 @@ async def get_by_id(vacancy_id: int, session_cookie: str = Cookie(None)):
             "code": vacancy.code,
         }
     )
+    return Response(content=json, media_type="application/json", status_code=200)
+
+
+@router.get("/get_all")
+async def get_all():
+    vacancies = await get_all_vacancies()
+    json = dumps([
+        {
+            "id": vacancy.id,
+            "title": vacancy.title,
+            "vacancy_code": vacancy.vacancy_code,
+            "description": vacancy.description,
+            "stack": vacancy.stack,
+            "salary": vacancy.salary,
+            "currency": vacancy.currency,
+            "city": vacancy.city,
+            "address": vacancy.address,
+            "type_of_vacancy": vacancy.type_of_vacancy,
+            "author": vacancy.author,
+            "phone": vacancy.phone,
+            "email": vacancy.email,
+            "code": vacancy.code,
+        }
+        for vacancy in vacancies
+    ])
     return Response(content=json, media_type="application/json", status_code=200)
