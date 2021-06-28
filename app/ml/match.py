@@ -27,6 +27,7 @@ class MatchForHR():
             vacancy_code = int(vacancy.code, 2)
             candidate_code = int(candidate.code, 2)
 
+            print(vacancy.stack, candidate.stack)
             print(vacancy_code, candidate_code)
 
             if vacancy_code_len > candidate_code_len:
