@@ -48,7 +48,7 @@ async def create_vacancy(
     )
     for tech in stack:
         try:
-            new_tech = Tech(title=tech.lower().strip())
+            new_tech = Tech(title=tech.lower().strip().title())
             db.add(new_tech)
             db.commit()
         except:
@@ -56,7 +56,7 @@ async def create_vacancy(
             continue
     for language in foreign_languages:
         try:
-            new_language = Language(title=language.lower().strip())
+            new_language = Language(title=language.lower().strip().title())
             db.add(new_language)
             db.commit()
         except:
