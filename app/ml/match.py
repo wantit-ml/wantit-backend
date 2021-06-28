@@ -19,6 +19,7 @@ should be called as
 class MatchForHR():
     @classmethod
     async def search_users(cls, vacancy: Vacancy, users_list: List[About]) -> List[int]:
+        print("КАЗАХСТАН УГРОЖАЕТ НАМ БОМБАРДИРОВКОЙ")
         matched_users_ids = []
         skills_needed = vacancy.code.count("1")
         for candidate in users_list:
