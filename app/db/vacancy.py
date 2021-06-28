@@ -31,6 +31,9 @@ async def create_vacancy(
         phone = firm.phone
     if email == None:
         email = firm.email
+    stack = list(map(lambda item: item.lower().strip().title(), stack))
+    foreign_languages = list(
+        map(lambda item: item.lower().strip().title(), foreign_languages))
     new_vacancy = Vacancy(
         title=title,
         vacancy_code=vacancy_code,

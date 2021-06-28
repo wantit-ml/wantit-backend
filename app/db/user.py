@@ -90,6 +90,9 @@ async def create_about(
     achievements: List[Dict],
 ) -> None:
     user = await get_user(user_identifier)
+    stack = list(map(lambda item: item.lower().strip().title(), stack))
+    foreign_languages = list(
+        map(lambda item: item.lower().strip().title(), foreign_languages))
     new_about = About(
         name=name,
         surname=surname,
@@ -129,7 +132,7 @@ async def create_about(
     db.commit()
     for tech in stack:
         try:
-            new_tech = Tech(title=tech.lower().strip().title())
+            new_tech = Tech(title=tech)
             db.add(new_tech)
             db.commit()
         except:
@@ -137,7 +140,7 @@ async def create_about(
             continue
     for language in foreign_languages:
         try:
-            new_language = Language(title=language.lower().strip().title())
+            new_language = Language(title=language)
             db.add(new_language)
             db.commit()
         except:
