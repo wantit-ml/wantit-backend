@@ -51,7 +51,7 @@ async def create_vacancy(
             new_tech = Tech(title=tech)
             db.add(new_tech)
             db.commit()
-        except IntegrityError:
+        except:
             db.rollback()
             continue
     for language in foreign_languages:
@@ -59,7 +59,7 @@ async def create_vacancy(
             new_language = Language(title=language)
             db.add(new_language)
             db.commit()
-        except IntegrityError:
+        except:
             db.rollback()
             continue
     firm.vacancies.append(new_vacancy)
@@ -112,6 +112,7 @@ async def get_matching_vacancies(user_identifier: Union[int, str]) -> List[Vacan
 async def get_vacancies_by_firm(firm_id: int) -> List[Vacancy]:
     firm = get_firm_by_id(firm_id)
     return firm.vacancies
+
 
 async def get_all_vacancies() -> List[Vacancy]:
     vacancies = db.query(Vacancy).all()
