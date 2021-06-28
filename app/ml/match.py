@@ -8,7 +8,7 @@ async def count_ones(x):
         result += x & 1
         x = x >> 1
     return result
-    
+
 
 """ 
 should be called as 
@@ -32,7 +32,7 @@ class MatchForHR():
             else:
                 vacancy_code <<= (candidate_code_len - vacancy_code_len)
 
-            if count_ones(vacancy_code & candidate_code)/skills_needed >= 0.6:
+            if (await count_ones(vacancy_code & candidate_code)) / skills_needed >= 0.6:
                 matched_users_ids.append(candidate.id)
         return matched_users_ids
 
@@ -62,6 +62,6 @@ class MatchForUser():
                 sample_vacancy_code <<= (
                     user_info_code_len - sample_vacancy_code_len)
 
-            if count_ones(sample_vacancy_code & user_info_code)/skills_needed >= 0.6:
+            if (await count_ones(sample_vacancy_code & user_info_code)) / skills_needed >= 0.6:
                 matched_vacancies_ids.append(sample_vacancy.id)
         return matched_vacancies_ids
