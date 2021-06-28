@@ -57,6 +57,7 @@ async def fetch_all_matching_users(session_cookie: str = Cookie(None)):
     for vacancy in vacancies:
         matching_users_raw = await get_matching_users(vacancy.id)
         for item_user in matching_users_raw:
+            print(item_user.role)
             about = await get_about(item_user.id)
             matching_users.append({
                 "id": item_user.id,
