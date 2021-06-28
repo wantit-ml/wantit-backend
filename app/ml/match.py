@@ -38,7 +38,7 @@ class MatchForHR():
             fullfilling = await count_ones(vacancy_code & candidate_code)
             if (fullfilling) / skills_needed >= 0.6:
                 print(fullfilling, skills_needed)
-                matched_users_ids.append(candidate.id)
+                matched_users_ids.append(candidate.user_id)
         print(matched_users_ids)
         return matched_users_ids
 
