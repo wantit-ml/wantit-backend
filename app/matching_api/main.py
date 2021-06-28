@@ -1,6 +1,6 @@
 from typing import List
 
-from app.db.db_setup import Vacancy
+from app.db.db_setup import About, Vacancy
 from os import stat
 from typing import Union
 from fastapi.exceptions import HTTPException
@@ -11,7 +11,7 @@ from json import dumps
 
 from starlette import status
 from app.db import vacancy
-from app.db.user import get_matching_users
+from app.db.user import get_about, get_matching_users
 from app.db.vacancy import get_matching_vacancies, get_vacancies_by_user_id
 from app.auth.main import verify_cookie
 
@@ -56,13 +56,25 @@ async def fetch_all_matching_users(session_cookie: str = Cookie(None)):
     matching_users = []
     for vacancy in vacancies:
         matching_users_raw = await get_matching_users(vacancy.id)
-        matching_users.extend([{
-            "id": item.id,
-            "username": item.username,
-            "email": item.email,
-            "phone": item.phone,
-            "role": item.role
-        } for item in matching_users_raw])
+        for item_user in matching_users_raw:
+            about = await get_about(item_user.id)
+            matching_users.append({
+                "id": item_user.id,
+                "username": item_user.username,
+                "email": item_user.email,
+                "phone": item_user.phone,
+                "name": about.name,
+                "surname": about.surname,
+                "city": about.city,
+                "gender": about.gender,
+                "rank": about.rank,
+                "currency": about.currency,
+                "salary": about.salary,
+                "school": about.school,
+                "age": about.age,
+                "can_move": about.can_move,
+                "stack": about.stack
+            })
     print(matching_users)
     return Response(content=dumps(matching_users), status_code=200)
 

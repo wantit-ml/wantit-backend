@@ -9,7 +9,7 @@ from sqlalchemy import (
     create_engine,
 )
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm import sessionmaker, relationship, backref
 import os
 
 Base = declarative_base()
@@ -23,7 +23,7 @@ class User(Base):
     email = Column(String)
     phone = Column(String)
     role = Column(String)
-    about = relationship("About", backref="users")
+    about = relationship("About", backref=backref("users", lazy="select"))
     firm = relationship("Firm", backref="users")
     salt = relationship("Salt", backref="users")
     sessions = relationship("Session", backref="users")
