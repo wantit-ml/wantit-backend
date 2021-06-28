@@ -53,6 +53,8 @@ async def create_user(
 
 
 async def get_user(user_identifier: Union[int, str]) -> User:
+    user_identifier = int(user_identifier) if type(
+        user_identifier) == str and user_identifier.isdigit() else user_identifier
     if type(user_identifier) is str:
         user = db.query(User).filter(User.username == user_identifier).one()
         return user

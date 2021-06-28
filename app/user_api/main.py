@@ -7,6 +7,7 @@ from base64 import urlsafe_b64decode
 from fastapi.routing import APIRouter
 from pydantic import BaseModel
 from fastapi import Response, Cookie
+from starlette import responses
 from starlette.requests import cookie_parser
 
 from app.db.user import create_about, get_about
@@ -118,6 +119,7 @@ async def fetch_about(identifier: Union[str, int] = None, session_cookie: str = 
             "telegram_id": about.telegram_id,
         }
     )
+    print(response)
     return Response(content=response, media_type="application/json", status_code=200)
 
 
