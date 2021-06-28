@@ -32,7 +32,9 @@ class MatchForHR():
             else:
                 vacancy_code <<= (candidate_code_len - vacancy_code_len)
 
-            if (await count_ones(vacancy_code & candidate_code)) / skills_needed >= 0.6:
+            fullfilling = await count_ones(vacancy_code & candidate_code)
+            if (fullfilling) / skills_needed >= 0.6:
+                print(fullfilling, skills_needed)
                 matched_users_ids.append(candidate.id)
         return matched_users_ids
 
